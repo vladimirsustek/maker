@@ -1,0 +1,7 @@
+Obj/
+Bin/
+*.o
+*.lss
+*.map
+*.elf
+*.hex
