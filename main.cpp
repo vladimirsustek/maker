@@ -1,4 +1,5 @@
 #include "function.hpp"
+#include "uart_interface.hpp"
 
 extern "C"
 {
@@ -6,6 +7,7 @@ extern "C"
 #include <util/delay.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdio.h>
 }
 
 #define ONBOARD_LED     (uint8_t)(PIN5)
@@ -39,12 +41,16 @@ void gpio_LED_set(bool state){
 int main(void)
 {
     gpio_initialize();
+    UARTinitiliaze(false);
+
+    static uint32_t number = 0;
 
     while(1)
-    {
-        _delay_ms(100);
-        gpio_LED_toggle();
-
+    {   _delay_ms(950);
+        gpio_LED_set(true);
+        _delay_ms(50);
+        gpio_LED_set(false);
+        printf("The number of the beast is %ld\n", number++);
     }
 
     return 0;
