@@ -1,6 +1,7 @@
 #include "uart.hpp"
 #include "uartprintf.hpp"
 #include "tim.hpp"
+#include "gpio.hpp"
 
 extern "C"
 {
@@ -15,6 +16,8 @@ int main(void)
 {
     uint32_t demoNumber = 0;
 
+    Gpio gpioPB5 = Gpio(GPIO::GpioPort::IO_PORTB, GPIO::GpioPin::Pin5, GPIO::GpioDirection::Ouput);
+    /* Initialize 57600baud Uart */
     Uart uart = Uart(false);
     /* After this you might call printf() as you are used to */
     UartPrintf stdPrintf = UartPrintf(uart);
@@ -30,9 +33,9 @@ int main(void)
 
     while(1)
     {   tim.msDelay(950);
-        //gpio_LED_set(true);
+        gpioPB5.set(true);
         tim.msDelay(50);
-        //gpio_LED_set(false);
+        gpioPB5.set(false);
 
         /* Show up, the printf-UART redirection works */
         printf("The number of the beast is %ld\n", demoNumber++);
