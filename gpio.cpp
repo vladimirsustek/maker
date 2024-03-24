@@ -1,96 +1,37 @@
 #include "gpio.hpp"
 
+extern "C"
+{
+    #include <stdio.h>
+}
+
 Gpio::Gpio(GPIO::GpioPort ioPort, GPIO::GpioPin ioPin, GPIO::GpioDirection ioDirection):
     port(ioPort), pin(ioPin), direction(ioDirection)
 
 {
-    switch(ioPort)
+    if(GPIO::GpioDirection::Output == direction)
     {
-        case GPIO::GpioPort::IO_PORTB:
-        {
-            if(ioDirection == GPIO::GpioDirection::Ouput)
-            {
-                DDRB|=(1 << static_cast<uint8_t>(ioPin));
-            }
-            else
-            {
-                DDRB&=~(1 << static_cast<uint8_t>(ioPin));
-            }
-        }
-        break;
-
-        case GPIO::GpioPort::IO_PORTC:
-        {
-            if(ioDirection == GPIO::GpioDirection::Ouput)
-            {
-                DDRC|=(1 << static_cast<uint8_t>(ioPin));
-            }
-            else
-            {
-                DDRC&=~(1 << static_cast<uint8_t>(ioPin));
-            }
-        }
-        break;
-
-        case GPIO::GpioPort::IO_PORTD:
-        {
-            if(ioDirection == GPIO::GpioDirection::Ouput)
-            {
-                DDRD|=(1 << static_cast<uint8_t>(ioPin));
-            }
-            else
-            {
-                DDRD&=~(1 << static_cast<uint8_t>(ioPin));
-            }
-        }
-        break;
+        _SFR_IO8(GPIO::DDRx(this->port)) |=  (1 << static_cast<uint8_t>(this->pin));
+    }
+    else
+    {
+        _SFR_IO8(GPIO::DDRx(this->port)) &= ~(1 << static_cast<uint8_t>(this->pin));
     }
 }
 
 void Gpio::set(bool state)
 {
-    switch(this->port)
+    if(true == state)
     {
-        case GPIO::GpioPort::IO_PORTB:
-        {
-            if(state)
-            {
-                PORTB|= (1 << static_cast<uint8_t>(this->pin));
-            }
-            else
-            {
-                PORTB&=~(1 << static_cast<uint8_t>(this->pin));
-            }
-        }
-        break;
-        case GPIO::GpioPort::IO_PORTC:
-        {
-            if(state)
-            {
-                PORTC|= (1 << static_cast<uint8_t>(this->pin));
-            }
-            else
-            {
-                PORTC&=~(1 << static_cast<uint8_t>(this->pin));
-            }
-        }
-        break;
-        case GPIO::GpioPort::IO_PORTD:
-        {
-            if(state)
-            {
-                PORTD|= (1 << static_cast<uint8_t>(this->pin));
-            }
-            else
-            {
-                PORTD&=~(1 << static_cast<uint8_t>(this->pin));
-            }
-        }
-        break;
+        _SFR_IO8(GPIO::PORTx(this->port)) |= (1 << static_cast<uint8_t>(this->pin));
+    }
+    else
+    {
+        _SFR_IO8(GPIO::PORTx(this->port)) &= ~(1 << static_cast<uint8_t>(this->pin));
     }
 }
 
 bool Gpio::get(void)
 {
-    return false;
+    return (_SFR_IO8(GPIO::PORTx(this->port)) & static_cast<uint8_t>(this->pin));
 }
