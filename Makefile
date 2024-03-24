@@ -5,7 +5,7 @@ INC_DIRS = -IC:\WinAVR\avr\include
 LIB_DIRS=-LC:\avr-gcc\avr
 LDFLAGS=-mmcu=atmega328p -Wl,-Map=
 LDFLAGS2=,--cref
-SOURCES=main.cpp function.cpp uart_interface.cpp
+SOURCES=main.cpp uart.cpp uartprintf.cpp tim.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 TARGET_NAME=Maker
 EXECUTABLE=$(TARGET_NAME).elf
@@ -23,4 +23,4 @@ $(EXECUTABLE): $(OBJECTS)
 	$(CC) $(CFLAGS) $(INC_DIRS) $< -o $@
 
 clean:
-	@ECHO "TODO"
+	.\clean_up.bat

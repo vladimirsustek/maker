@@ -4,6 +4,7 @@
 /***********************************************************************/
 /*****************    Includes   ***************************************/
 /***********************************************************************/
+
 extern "C"
 {
     #include <string.h>
@@ -11,6 +12,8 @@ extern "C"
     #include <avr/io.h>
     #include <avr/interrupt.h>
 }
+
+#include "IPeripheral.hpp"
 
 /***********************************************************************/
 /*****************    Private macro *  *********************************/
@@ -36,8 +39,16 @@ extern "C"
 /*****************    Public functions    ******************************/
 /***********************************************************************/
 
-void UARTinitiliaze(uint8_t isr_enable_flag);
-uint8_t UARTisLFreceived(void);
-uint8_t UARTcopyBuffer(uint8_t * buffer, uint8_t lng);
-uint8_t* UARTFetchReceivedLine(uint8_t* pLength);
+class Uart : IPeripheral
+{
+public:
+    Uart(bool isr_enable_flag);
+    ~Uart();
+    uint16_t write(uint8_t* pData, uint16_t size);
+    uint16_t read(uint8_t* pData, uint16_t size);
+    uint16_t isRxISR(void);
+    uint16_t isTxISR(void);
+    uint16_t isTXBusy(void);
+};
+
 #endif // UART_INTERFACE_H_INCLUDED
