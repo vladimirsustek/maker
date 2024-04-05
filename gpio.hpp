@@ -20,7 +20,7 @@ namespace GPIO
     /* To fit both DDR and PORT into a single number*/
     constexpr uint16_t DDRx_PORTx(uint16_t ddr, uint16_t port)
     {
-        return ddr << 8 | port;
+        return (ddr << 8) | port;
     }
 
     /* To get DDR back*/

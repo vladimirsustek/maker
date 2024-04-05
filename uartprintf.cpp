@@ -6,7 +6,7 @@ extern "C"
     #include <avr/interrupt.h>
 }
 
-#include "UartPrintf.hpp"
+#include "uartprintf.hpp"
 
 extern "C"
 {

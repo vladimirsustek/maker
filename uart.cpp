@@ -7,7 +7,7 @@
 /***********************************************************************/
 /*****************    Includes   ***************************************/
 /***********************************************************************/
-#include "Uart.hpp"
+#include "uart.hpp"
 
 /***********************************************************************/
 /*****************    Private macro *  *********************************/
@@ -134,6 +134,14 @@ uint16_t Uart::isTXBusy(void)
     {
         return 0;
     }
+}
+
+
+/* Needed when pure virtual function is used. Normally comes with libstd++, but
+ * for avr-g++ must be this declared explicitely. */
+extern "C" void __cxa_pure_virtual(void) 
+{
+    while(1);
 }
 
 
