@@ -1,8 +1,20 @@
-CCXX =C:\avr-gcc\bin\avr-g++.exe
+#Compiler and linker
+CXX =C:\avr-gcc\bin\avr-g++.exe
+CXXLD =C:\avr-gcc\bin\avr-g++.exe
+#Converts .elf into hex
 OBJ_COPY =C:\avr-gcc\bin\avr-objcopy
+#To see code sections
 OBJ_DUMP =C:\avr-gcc\bin\avr-objdump
 
+#FLASH Utility
+AVRDUDESS =C:\AVRDUDESS\avrdude.exe
+
+#USB Port
+USB_PORT =COM9
+
+#atmega328p headers
 INC_DIRS = -IC:\WinAVR\avr\include
+#atmega328 library
 LIB_DIRS=-LC:\avr-gcc\avr
 
 OBJ_COPY_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature -O ihex
@@ -12,6 +24,7 @@ MCU_NAME =atmega328p
 MCU_CLOCK =16000000
 OPTIMIZATIONS =-O0
 
+#-c stands for "only compiler, no linking"
 CFLAGS=-c -Wall -mmcu=$(MCU_NAME) $(OPTIMIZATIONS) -DF_CPU=$(MCU_CLOCK) -g
 LD_FLAGS_1 =-mmcu=$(MCU_NAME) -Wl,-Map=
 LD_FLAGS_2 = ,--cref
@@ -28,13 +41,24 @@ MAP_FILE=bin/$(TARGET_NAME).map
 .PHONY: all
 all: $(SOURCES) $(EXECUTABLE)
 
+# '| build_directory' means that build_directory is called before 
+# "EXECUTABLES" is created (MUST BE)
 $(EXECUTABLE): $(OBJECTS) | build_directory
-	$(CCXX) $(LIB_DIRS) -o $@ $(OBJECTS) $(LD_FLAGS_1)$(MAP_FILE)$(LD_FLAGS_2)
+	$(CXXLD) $(LIB_DIRS) -o $@ $(OBJECTS) $(LD_FLAGS_1)$(MAP_FILE)$(LD_FLAGS_2)
 	$(OBJ_DUMP) $(OBJ_DUMP_FLAG) $(EXECUTABLE) > $(BINDIR)/$(TARGET_NAME).lss
 	$(OBJ_COPY) $(OBJ_COPY_FLAGS) $(EXECUTABLE) $(BINDIR)/$(TARGET_NAME).hex
 
+
+#$< represents the prerequisite (source file)
+#$@ represents the target (object file).
+
+# A pattern, how to create .o file(s) in the OBJDIR.
+# The '%' is a wildcard -> so it says for anny .cpp make an .o
+# The '| object_directory' says, that the method is called before building
 $(OBJECTS): $(OBJDIR)/%.o: %.cpp | object_directory
-	$(CCXX) $(CFLAGS) $(INC_DIRS) $< -o $@
+# $< automatic variable representing prerequisite (source file) => %.cpp
+# $@ automatic variable representing object file => %.o
+	$(CXX) $(CFLAGS) $(INC_DIRS) $< -o $@
 
 object_directory:
 	mkdir $(OBJDIR)
@@ -42,8 +66,11 @@ object_directory:
 build_directory:
 	mkdir $(BINDIR)
 
-.PHONY: clean
-clean: 
-	del obj -Recurse -Force
-	del bin -Recurse -Force
+.PHONY: flash
+flash: $(BINDIR)/$(TARGET_NAME).hex
+	$(AVRDUDESS) -u -c arduino -p m328p -P COM9 -b 57600 -V -U flash:w:"$(BINDIR)/$(TARGET_NAME).hex":a 
 
+.PHONY: clean
+clean:
+	rmdir /s /q obj
+	rmdir /s /q bin

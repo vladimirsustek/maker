@@ -84,7 +84,7 @@ void tim_beep_D6D4_initialize(void) {
 
 }
 
-extern void tim_beep_D6D4_sound(bool state) {
+void tim_beep_D6D4_sound(bool state) {
     if(state) {
         /* Enable toggling PORTB.PIN1 and
         enable timer device */
@@ -100,7 +100,7 @@ extern void tim_beep_D6D4_sound(bool state) {
     }
 }
 
-extern void tim_beep_D6D4_freq(uint16_t freq) {
+void tim_beep_D6D4_freq(uint16_t freq) {
 
     uint16_t aux_OCR1A = 0u;
     /* Calculate OCR1A compare register value for
