@@ -61,7 +61,10 @@ void Tim::msDelay(uint32_t delay) {
   }
 }
 
-void tim_beep_D6D4_initialize(void) {
+/* Configure TIM1 to toggle D1 (PORT.PIN1) when
+   CTC reaches compared value OCR1A. For buzzer 
+   GND use PORTB.PIN5 */
+void Tim::configureBeepPins(void) {
 
     /* TIM0 - ATmega328p 8-bit timer *************/
 
@@ -84,7 +87,20 @@ void tim_beep_D6D4_initialize(void) {
 
 }
 
-void tim_beep_D6D4_sound(bool state) {
+void Tim::setBeepFrequency(uint16_t frequency) {
+
+    uint16_t aux_OCR1A = 0u;
+    /* Calculate OCR1A compare register value for
+    TCNT1A counter (TCNT1A increments up to OCR1A) */
+    aux_OCR1A = (uint16_t)((BEEP_CLOCK)/(uint32_t)frequency);
+    /* Reset counting register for fluent beep */
+    TCNT1 = 0;
+    /* Write register for frequency change */
+    OCR1A = aux_OCR1A;
+
+}
+
+void Tim::enableBeep(bool state) {
     if(state) {
         /* Enable toggling PORTB.PIN1 and
         enable timer device */
@@ -98,17 +114,4 @@ void tim_beep_D6D4_sound(bool state) {
         TCCR1B &= ~(1 << WGM12);
         TCCR1A &= ~(1 << COM1A0);
     }
-}
-
-void tim_beep_D6D4_freq(uint16_t freq) {
-
-    uint16_t aux_OCR1A = 0u;
-    /* Calculate OCR1A compare register value for
-    TCNT1A counter (TCNT1A increments up to OCR1A) */
-    aux_OCR1A = (uint16_t)((BEEP_CLOCK)/(uint32_t)freq);
-    /* Reset counting register for fluent beep */
-    TCNT1 = 0;
-    /* Write register for frequency change */
-    OCR1A = aux_OCR1A;
-
 }

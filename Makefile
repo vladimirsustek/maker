@@ -12,7 +12,7 @@ AVRDUDESS =C:\AVRDUDESS\avrdude.exe
 #USB Port
 USB_PORT =COM9
 PORT_SPEED =57600
-FLASH_MCU =328p
+FLASH_MCU =m328p
 PROGRAMMER =arduino
 
 #atmega328p headers
