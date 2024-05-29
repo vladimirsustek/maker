@@ -67,10 +67,11 @@ $(OBJECTS): $(OBJDIR)/%.o: %.cpp | object_directory
 	$(CXX) $(CFLAGS) $(INC_DIRS) $< -o $@
 
 object_directory:
-	mkdir $(OBJDIR)
+	IF exist $(OBJDIR) (echo "$(OBJDIR) exists") ELSE (mkdir $(OBJDIR))
 
 build_directory:
-	mkdir $(BINDIR)
+	IF exist $(BINDIR) (echo "$(BINDIR) exists") ELSE (mkdir $(BINDIR))
+
 
 .PHONY: flash
 flash: $(BINDIR)/$(TARGET_NAME).hex
@@ -78,5 +79,9 @@ flash: $(BINDIR)/$(TARGET_NAME).hex
 
 .PHONY: clean
 clean:
-	rmdir /s /q obj
-	rmdir /s /q bin
+	@echo off
+	IF exist $(OBJDIR) (rmdir /s /q $(OBJDIR)) ELSE (echo "$(OBJDIR) does not exist")
+	IF exist $(BINDIR) (rmdir /s /q $(BINDIR)) ELSE (echo "$(BINDIR) does not exist")
+	@echo on
+
+rebuild: clean | all
