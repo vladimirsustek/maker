@@ -1,5 +1,5 @@
-#ifndef UART_INTERFACE_H_INCLUDED
-#define UART_INTERFACE_H_INCLUDED
+#ifndef UART_HPP
+#define UART_HPP
 
 /***********************************************************************/
 /*****************    Includes   ***************************************/
@@ -51,4 +51,4 @@ public:
     uint16_t isTXBusy(void);
 };
 
-#endif // UART_INTERFACE_H_INCLUDED
+#endif // UART_HPP

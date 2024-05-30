@@ -1,3 +1,6 @@
+#ifndef UARTPRINTF_HPP
+#define UARTPRINTF_HPP
+
 #include "Uart.hpp"
 
 class UartPrintf 
@@ -8,3 +11,5 @@ public:
 private:
     Uart uart;
 };
+
+#endif

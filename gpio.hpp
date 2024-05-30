@@ -1,9 +1,10 @@
+#ifndef GPIO_HPP
+#define GPIO_HPP
+
 extern "C"
 {
     #include <avr/io.h>
 }
-
-
 
 namespace GPIO
 {
@@ -65,3 +66,5 @@ private:
     GPIO::GpioPin pin;
     GPIO::GpioDirection direction;
 };
+
+#endif

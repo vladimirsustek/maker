@@ -2,6 +2,7 @@
 #include "uartprintf.hpp"
 #include "tim.hpp"
 #include "gpio.hpp"
+#include "tone.hpp"
 
 extern "C"
 {
@@ -23,6 +24,7 @@ int main(void)
 
     /* 1kHz timer used for msDelay*/
     Tim tim = Tim();
+    Tone tone = Tone(tim);
 
     Gpio gpioPB5 = Gpio(GPIO::GpioPort::IO_PORTB, GPIO::GpioPin::Pin5, GPIO::GpioDirection::Output);
     Gpio gpioPC4 = Gpio(GPIO::GpioPort::IO_PORTC, GPIO::GpioPin::Pin4, GPIO::GpioDirection::Output);
@@ -31,8 +33,6 @@ int main(void)
     /* All Simple-MCU-might-use C++ casts showed */
     uart.write(reinterpret_cast<uint8_t*>(const_cast<char*>("HelloWorld!\n")), static_cast<uint16_t>(strlen("HelloWorld!\n")));
 
-    tim.configureBeepPins();
-    tim.enableBeep(true);
 
     /* Enable all interrupts within Atmega328p*/
     sei();
@@ -40,22 +40,41 @@ int main(void)
     /* Show up, the printf-UART redirection works */
     printf("The number of the beast is %ld\n", demoNumber++);
 
-    tim.setBeepFrequency(Tone::C_4);
-    tim.msDelay(450);
-    tim.setBeepFrequency(Tone::D_4);
-    tim.msDelay(450);
-    tim.setBeepFrequency(Tone::E_4);
-    tim.msDelay(450);
-    tim.setBeepFrequency(Tone::F_4);
-    tim.msDelay(450);
-    tim.setBeepFrequency(Tone::G_4);
-    tim.msDelay(450);
-    tim.setBeepFrequency(Tone::A_4);
-    tim.msDelay(450);
-    tim.setBeepFrequency(Tone::B_4);
-    tim.msDelay(450);
-    tim.setBeepFrequency(Tone::C_5);
-    tim.msDelay(450);
+    /* Hvezdy jsou jak sedmikrasky */
+    tone.playTone(Note::F_6, Duration::Quarter);
+    tone.playTone(Note::AesBb_6, Duration::Quarter);
+    tone.playTone(Note::DisEb_7, Duration::Quarter);
+    tone.playTone(Note::CisDb_7, Duration::Quarter);
+    tone.playTone(Note::E_7, Duration::Quarter);
+    tone.playTone(Note::DisEb_7, Duration::Quarter);
+    tone.playTone(Note::CisDb_7, Duration::Quarter);
+    tone.playTone(Note::AesBb_6, Duration::Quarter);
+
+    /* nad Brnem */
+    tone.playTone(Note::GisAb_6, Duration::Quarter);
+    tone.playTone(Note::AesBb_6, Duration::Quarter);
+    tone.playTone(Note::F_6, Duration::Half);
+    tone.playTone(Note::F_6, Duration::Half);
+    tone.playTone(Note::None, Duration::Half);
+
+    /* noc, muj mily */
+    tone.playTone(Note::E_6, Duration::Quarter);
+    tone.playTone(Note::FisGb_6, Duration::Quarter);
+    tone.playTone(Note::AesBb_6, Duration::Quarter);
+    tone.playTone(Note::CisDb_7, Duration::Quarter);
+
+    /* dobrou */
+    tone.playTone(Note::CisDb_7, Duration::Half);
+    tone.playTone(Note::DisEb_7, Duration::Quarter);
+    tone.playTone(Note::AesBb_6, Duration::Quarter);
+
+    /* noc */
+    tone.playTone(Note::CisDb_7, Duration::Full);
+    tone.playTone(Note::CisDb_7, Duration::Half);
+
+    /* -pomlka- */
+    tone.playTone(Note::CisDb_7, Duration::Quarter);
+    tone.playTone(Note::CisDb_7, Duration::Quarter);
     
     tim.enableBeep(false);
 
