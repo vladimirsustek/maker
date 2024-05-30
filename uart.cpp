@@ -57,9 +57,12 @@ static void uart_exit_critical(void) {
  * @sa uart_copy_buffer
  *
  */
-ISR(USART_RX_vect){
-
-    uint8_t iUDR0 = UDR0;
+ISR(USART_RX_vect)
+{
+    uart_enter_critical();
+    volatile uint8_t iUDR0 = UDR0;
+    (void)iUDR0;
+    uart_exit_critical();
 }
 
 Uart::Uart(bool isr_enable_flag)

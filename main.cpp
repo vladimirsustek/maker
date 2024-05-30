@@ -3,6 +3,7 @@
 #include "tim.hpp"
 #include "gpio.hpp"
 #include "tone.hpp"
+#include "core.hpp"
 
 extern "C"
 {
@@ -35,7 +36,7 @@ int main(void)
 
 
     /* Enable all interrupts within Atmega328p*/
-    sei();
+    Core::enableInterrupts();
 
     /* Show up, the printf-UART redirection works */
     printf("The number of the beast is %ld\n", demoNumber++);
@@ -77,7 +78,7 @@ int main(void)
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     
     tim.enableBeep(false);
-
+    
     while(1)
     {   
     }
