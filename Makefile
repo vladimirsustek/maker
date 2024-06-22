@@ -1,13 +1,27 @@
-#Compiler and linker
-CXX =C:\avr-gcc\bin\avr-g++.exe
-CXXLD =C:\avr-gcc\bin\avr-g++.exe
-#Converts .elf into hex
-OBJ_COPY =C:\avr-gcc\bin\avr-objcopy
-#To see code sections
-OBJ_DUMP =C:\avr-gcc\bin\avr-objdump
 
-#FLASH Utility
+AVR_GCC_DIR = C:\avr-gcc
+#AVR_GCC_DIR = home/vlasus/avr-gcc
+
+print-%  : ; @echo $* = $($*)
+
+#OS equal to 'Windows_NT' for Windows machines
+ifdef OS
+CXX = $(AVR_GCC_DIR)\bin\avr-g++.exe
+CXXLD = $(AVR_GCC_DIR)\bin\avr-g++.exe
+OBJ_COPY =$(AVR_GCC_DIR)\bin\avr-objcopy.exe
+OBJ_DUMP =$(AVR_GCC_DIR)\bin\avr-objdump.exe
+INC_DIRS = -I$(AVR_GCC_DIR)\avr\include
+LIB_DIRS=-L$(AVR_GCC_DIR)\avr
 AVRDUDESS =C:\AVRDUDESS\avrdude.exe
+else
+CXX = $(AVR_GCC_DIR)\bin\avr-g++
+CXXLD = $(AVR_GCC_DIR)\bin\avr-g++
+OBJ_COPY =$(AVR_GCC_DIR)\bin\avr-objcopy
+OBJ_DUMP =$(AVR_GCC_DIR)\bin\avr-objdump
+AVRDUDESS =C:\AVRDUDESS\avrdude.exe
+INC_DIRS = -I$(AVR_GCC_DIR)\avr\include
+LIB_DIRS=-L$(AVR_GCC_DIR)\avr
+endif
 
 #USB Port
 USB_PORT =COM9
@@ -15,10 +29,7 @@ PORT_SPEED =57600
 FLASH_MCU =m328p
 PROGRAMMER =arduino
 
-#atmega328p headers
-INC_DIRS = -IC:\WinAVR\avr\include
-#atmega328 library
-LIB_DIRS=-LC:\avr-gcc\avr
+
 
 OBJ_COPY_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature -O ihex
 OBJ_DUMP_FLAG = -h -S
@@ -42,6 +53,7 @@ MCU_NAME ?=this_will_not_cause_error
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS := $(patsubst %.cpp,$(OBJDIR)/%.o,$(SOURCES))
+INC_DIRS += -I$(CURDIR)
 
 TARGET_NAME=Maker
 EXECUTABLE=bin/$(TARGET_NAME).elf
@@ -67,11 +79,18 @@ $(OBJECTS): $(OBJDIR)/%.o: %.cpp | object_directory
 	$(CXX) $(CFLAGS) $(INC_DIRS) $< -o $@
 
 object_directory:
+ifdef OS
 	IF exist $(OBJDIR) (echo "$(OBJDIR) exists") ELSE (mkdir $(OBJDIR))
+else
+#if [! -d "$(OBJDIR)" ]; then mkdir $(OBJDIR); else echo "$(OBJDIR)" exists; fi
+endif
 
 build_directory:
+ifdef OS
 	IF exist $(BINDIR) (echo "$(BINDIR) exists") ELSE (mkdir $(BINDIR))
-
+else
+#if [! -d "$(BINDIR)" ]; then mkdir $(BINDIR); else echo "$(BINDIR)" exists; fi
+endif
 
 .PHONY: flash
 flash: $(BINDIR)/$(TARGET_NAME).hex
@@ -79,9 +98,14 @@ flash: $(BINDIR)/$(TARGET_NAME).hex
 
 .PHONY: clean
 clean:
+ifdef OS
 	@echo off
 	IF exist $(OBJDIR) (rmdir /s /q $(OBJDIR)) ELSE (echo "$(OBJDIR) does not exist")
 	IF exist $(BINDIR) (rmdir /s /q $(BINDIR)) ELSE (echo "$(BINDIR) does not exist")
 	@echo on
+else
+	@if [-d "$(OBJDIR)" ]; then rm -r $(OBJDIR); else echo "$(OBJDIR) does not exists"; fi
+	@if [-d "$(BINDIR)" ]; then rm -r $(BINDIR); else echo "$(BINDIR) does not exists"; fi
+endif
 
 rebuild: clean | all

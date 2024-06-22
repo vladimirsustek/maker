@@ -34,7 +34,6 @@ int main(void)
     /* All Simple-MCU-might-use C++ casts showed */
     uart.write(reinterpret_cast<uint8_t*>(const_cast<char*>("HelloWorld!\n")), static_cast<uint16_t>(strlen("HelloWorld!\n")));
 
-
     /* Enable all interrupts within Atmega328p*/
     Core::enableInterrupts();
 
@@ -78,7 +77,7 @@ int main(void)
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     
     tim.enableBeep(false);
-    
+
     while(1)
     {   
     }

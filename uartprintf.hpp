@@ -1,7 +1,7 @@
 #ifndef UARTPRINTF_HPP
 #define UARTPRINTF_HPP
 
-#include "Uart.hpp"
+#include "uart.hpp"
 
 class UartPrintf 
 {
