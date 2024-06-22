@@ -1,6 +1,6 @@
 
-AVR_GCC_DIR = C:\avr-gcc
-#AVR_GCC_DIR = home/vlasus/avr-gcc
+#AVR_GCC_DIR = C:\avr-gcc
+AVR_GCC_DIR = /home/vladimir/avr-gcc
 
 print-%  : ; @echo $* = $($*)
 
@@ -14,13 +14,13 @@ INC_DIRS = -I$(AVR_GCC_DIR)\avr\include
 LIB_DIRS=-L$(AVR_GCC_DIR)\avr
 AVRDUDESS =C:\AVRDUDESS\avrdude.exe
 else
-CXX = $(AVR_GCC_DIR)\bin\avr-g++
-CXXLD = $(AVR_GCC_DIR)\bin\avr-g++
-OBJ_COPY =$(AVR_GCC_DIR)\bin\avr-objcopy
-OBJ_DUMP =$(AVR_GCC_DIR)\bin\avr-objdump
-AVRDUDESS =C:\AVRDUDESS\avrdude.exe
-INC_DIRS = -I$(AVR_GCC_DIR)\avr\include
-LIB_DIRS=-L$(AVR_GCC_DIR)\avr
+CXX = $(AVR_GCC_DIR)/bin/avr-g++
+CXXLD = $(AVR_GCC_DIR)/bin/avr-g++
+OBJ_COPY =$(AVR_GCC_DIR)/bin/avr-objcopy
+OBJ_DUMP =$(AVR_GCC_DIR)/bin/avr-objdump
+INC_DIRS = -I$(AVR_GCC_DIR)/avr/include
+LIB_DIRS=-L$(AVR_GCC_DIR)/avr
+AVRDUDESS =
 endif
 
 #USB Port
@@ -82,14 +82,14 @@ object_directory:
 ifdef OS
 	IF exist $(OBJDIR) (echo "$(OBJDIR) exists") ELSE (mkdir $(OBJDIR))
 else
-#if [! -d "$(OBJDIR)" ]; then mkdir $(OBJDIR); else echo "$(OBJDIR)" exists; fi
+	if [ ! -d "$(OBJDIR)/" ]; then mkdir $(OBJDIR)/; else echo "$(OBJDIR)/" exists; fi
 endif
 
 build_directory:
 ifdef OS
 	IF exist $(BINDIR) (echo "$(BINDIR) exists") ELSE (mkdir $(BINDIR))
 else
-#if [! -d "$(BINDIR)" ]; then mkdir $(BINDIR); else echo "$(BINDIR)" exists; fi
+	if [ ! -d "$(BINDIR)/" ]; then mkdir $(BINDIR)/; else echo "$(BINDIR)/" exists; fi
 endif
 
 .PHONY: flash
@@ -104,8 +104,8 @@ ifdef OS
 	IF exist $(BINDIR) (rmdir /s /q $(BINDIR)) ELSE (echo "$(BINDIR) does not exist")
 	@echo on
 else
-	@if [-d "$(OBJDIR)" ]; then rm -r $(OBJDIR); else echo "$(OBJDIR) does not exists"; fi
-	@if [-d "$(BINDIR)" ]; then rm -r $(BINDIR); else echo "$(BINDIR) does not exists"; fi
+	@if [ -d "$(OBJDIR)/" ]; then rm -r $(OBJDIR)/; else echo "$(OBJDIR)/ does not exists"; fi
+	@if [ -d "$(BINDIR)/" ]; then rm -r $(BINDIR)/; else echo "$(BINDIR)/ does not exists"; fi
 endif
 
 rebuild: clean | all
