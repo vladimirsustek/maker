@@ -4,6 +4,7 @@
 #include "gpio.hpp"
 #include "tone.hpp"
 #include "core.hpp"
+#include "eeprom.hpp"
 
 extern "C"
 {
@@ -26,6 +27,8 @@ int main(void)
     /* 1kHz timer used for msDelay*/
     Tim tim = Tim();
     Tone tone = Tone(tim);
+
+    EEPROM eeprom = EEPROM();
 
     Gpio gpioPB5 = Gpio(GPIO::GpioPort::IO_PORTB, GPIO::GpioPin::Pin5, GPIO::GpioDirection::Output);
     Gpio gpioPC4 = Gpio(GPIO::GpioPort::IO_PORTC, GPIO::GpioPin::Pin4, GPIO::GpioDirection::Output);
@@ -77,6 +80,14 @@ int main(void)
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     
     tim.enableBeep(false);
+
+    uint8_t array[] = "SERENITY COX\n";
+    uint8_t readback[32] = {0};
+    uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
+    eeprom.write(0, array, length);
+    eeprom.read(0,readback, length);
+
+    printf(reinterpret_cast<char*>(readback));
 
     while(1)
     {   
