@@ -1,6 +1,6 @@
 
-#AVR_GCC_DIR = C:\avr-gcc
-AVR_GCC_DIR = /home/vladimir/avr-gcc
+AVR_GCC_DIR = C:\avr-gcc
+#AVR_GCC_DIR = /home/vladimir/avr-gcc
 
 print-%  : ; @echo $* = $($*)
 
@@ -24,12 +24,10 @@ AVRDUDESS =
 endif
 
 #USB Port
-USB_PORT =COM9
+USB_PORT =COM11
 PORT_SPEED =57600
 FLASH_MCU =m328p
 PROGRAMMER =arduino
-
-
 
 OBJ_COPY_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature -O ihex
 OBJ_DUMP_FLAG = -h -S

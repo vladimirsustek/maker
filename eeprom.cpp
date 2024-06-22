@@ -10,47 +10,53 @@ EEPROM::~EEPROM()
 {
 
 }
+/* // Find out how to implement eeprom_busy_wait, eeprom_write_byte
+void EEPROM::write(uint16_t address, uint8_t* data, uint16_t length)
+{
+    eeprom_busy_wait();
+    eeprom_write_byte(reinterpret_cast<uint8_t*>(0), 0xAA);
+}
+*/
+
 
 void EEPROM::write(uint16_t address, uint8_t* data, uint16_t length)
 {
     uint16_t lng = length;
-    while(lng)
-    {
-        /* Wait for completion of previous write */
-        while(EECR & (1<<EEPE))
-        ;
-        /* Set up address and Data Registers */
-        EEAR = address;
-        EEDR = *data;
-        /* Write logical one to EEMPE */
-        EECR |= (1<<EEMPE);
-        /* Start eeprom write by setting EEPE */
-        EECR |= (1<<EEPE);
 
-        data++;
-        lng--;
+    if ((data == NULL) || (length > EEPROM_MAX_SIZE) || (address + length > EEPROM_MAX_SIZE))
+    {
+        return ;
     }
 
+    while(lng)
+    {
+        eeprom_busy_wait();
+        eeprom_write_byte(reinterpret_cast<uint8_t*>(address), *data);
+
+        data++;
+        address++;
+        lng--;
+
+    }
 }
 
+// Find out how to implement eeprom_busy_wait, eeprom_write_byte
 void EEPROM::read(uint16_t address, uint8_t* data, uint16_t length)
 {
     uint16_t lng = length;
     uint16_t idx = 0;
 
+    if ((data == NULL) || (length > EEPROM_MAX_SIZE) || (address + length > EEPROM_MAX_SIZE))
+    {
+        return ;
+    }
+
     while(lng)
     {
-        /* Wait for completion of previous write */
-        while(EECR & (1<<EEPE))
-        ;
-        /* Set up address register */
-        EEAR = address;
-        /* Start eeprom read by writing EERE */
-        EECR |= (1<<EERE);
-        /* Return data from Data Register */
-        data[idx] = EEDR;
+        eeprom_busy_wait();
+        data[idx]  = eeprom_read_byte(const_cast<const uint8_t*>(reinterpret_cast<uint8_t*>(address)));
         lng--;
         address++;
-
+        idx++;
     }
 }

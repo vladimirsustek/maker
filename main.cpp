@@ -36,7 +36,7 @@ int main(void)
 
     /* All Simple-MCU-might-use C++ casts showed */
     uart.write(reinterpret_cast<uint8_t*>(const_cast<char*>("HelloWorld!\n")), static_cast<uint16_t>(strlen("HelloWorld!\n")));
-
+    goto eeprom;
     /* Enable all interrupts within Atmega328p*/
     Core::enableInterrupts();
 
@@ -48,6 +48,7 @@ int main(void)
     tone.playTone(Note::AesBb_6, Duration::Quarter);
     tone.playTone(Note::DisEb_7, Duration::Quarter);
     tone.playTone(Note::CisDb_7, Duration::Quarter);
+
     tone.playTone(Note::E_7, Duration::Quarter);
     tone.playTone(Note::DisEb_7, Duration::Quarter);
     tone.playTone(Note::CisDb_7, Duration::Quarter);
@@ -79,19 +80,23 @@ int main(void)
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     
+    eeprom:
+
     tim.enableBeep(false);
 
-    uint8_t array[] = "SERENITY COX\n";
+    uint8_t array[] = "Hody v Zelesicich!\n";
     uint8_t readback[32] = {0};
     uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
+
+    cli();
     eeprom.write(0, array, length);
-    eeprom.read(0,readback, length);
+    eeprom.read(0, readback, length);
+    sei();
 
-    printf(reinterpret_cast<char*>(readback));
+    printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
 
-    while(1)
-    {   
-    }
+
+    while(1);
 
     return 0;
 }
