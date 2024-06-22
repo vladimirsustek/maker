@@ -36,12 +36,20 @@ int main(void)
 
     /* All Simple-MCU-might-use C++ casts showed */
     uart.write(reinterpret_cast<uint8_t*>(const_cast<char*>("HelloWorld!\n")), static_cast<uint16_t>(strlen("HelloWorld!\n")));
-    goto eeprom;
     /* Enable all interrupts within Atmega328p*/
     Core::enableInterrupts();
 
     /* Show up, the printf-UART redirection works */
     printf("The number of the beast is %ld\n", demoNumber++);
+
+    uint8_t array[64] = "Juch Hody v Zelesicich!\n";
+    uint8_t readback[64] = {0};
+    uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
+
+    eeprom.write(300, array, length);
+    eeprom.read(300, readback, length);
+
+    printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
 
     /* Hvezdy jsou jak sedmikrasky */
     tone.playTone(Note::F_6, Duration::Quarter);
@@ -79,22 +87,8 @@ int main(void)
     /* -pomlka- */
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     tone.playTone(Note::CisDb_7, Duration::Quarter);
-    
-    eeprom:
 
     tim.enableBeep(false);
-
-    uint8_t array[] = "Hody v Zelesicich!\n";
-    uint8_t readback[32] = {0};
-    uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
-
-    cli();
-    eeprom.write(0, array, length);
-    eeprom.read(0, readback, length);
-    sei();
-
-    printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
-
 
     while(1);
 

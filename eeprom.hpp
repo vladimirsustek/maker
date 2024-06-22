@@ -10,7 +10,6 @@ extern "C"
 #include <stdio.h>
 #include <avr/interrupt.h>
 #include <avr/eeprom.h>
-
 }
 
 constexpr uint16_t EEPROM_MAX_SIZE = 1024;

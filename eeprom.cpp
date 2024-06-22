@@ -18,7 +18,6 @@ void EEPROM::write(uint16_t address, uint8_t* data, uint16_t length)
 }
 */
 
-
 void EEPROM::write(uint16_t address, uint8_t* data, uint16_t length)
 {
     uint16_t lng = length;
