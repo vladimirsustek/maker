@@ -42,18 +42,19 @@ int main(void)
     /* Show up, the printf-UART redirection works */
     printf("The number of the beast is %ld\n", demoNumber++);
 
-    uint8_t array[64] = "Juch Hody v Zelesicich!\n";
-    uint8_t readback[64] = {0};
-    uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
+    //uint8_t array[64] = "Juch Hody v Zelesicich!\n";
+    uint8_t readback[91] = {0};
+    //uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
 
-    eeprom.write(300, array, length);
-    eeprom.read(300, readback, length);
+    //eeprom.write(0, array, length);
+    eeprom.read(0, readback, 90);
 
     printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
 
     /* Hvezdy jsou jak sedmikrasky */
     tone.playTone(Note::F_6, Duration::Quarter);
     tone.playTone(Note::AesBb_6, Duration::Quarter);
+#if 0
     tone.playTone(Note::DisEb_7, Duration::Quarter);
     tone.playTone(Note::CisDb_7, Duration::Quarter);
 
@@ -87,7 +88,7 @@ int main(void)
     /* -pomlka- */
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     tone.playTone(Note::CisDb_7, Duration::Quarter);
-
+#endif
     tim.enableBeep(false);
 
     while(1);

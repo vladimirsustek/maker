@@ -1,5 +1,6 @@
 
 AVR_GCC_DIR = C:\avr-gcc
+EEPROM_FILE_PATH_AND_NAME = C:\VSC\Text2IntelHex\EEPROM.eep
 #AVR_GCC_DIR = /home/vladimir/avr-gcc
 
 print-%  : ; @echo $* = $($*)
@@ -24,7 +25,7 @@ AVRDUDESS =
 endif
 
 #USB Port
-USB_PORT =COM11
+USB_PORT =COM12
 PORT_SPEED =57600
 FLASH_MCU =m328p
 PROGRAMMER =arduino
@@ -51,6 +52,7 @@ MCU_NAME ?=this_will_not_cause_error
 
 SOURCES := $(wildcard *.cpp)
 OBJECTS := $(patsubst %.cpp,$(OBJDIR)/%.o,$(SOURCES))
+
 INC_DIRS += -I$(CURDIR)
 
 TARGET_NAME=Maker
@@ -93,6 +95,10 @@ endif
 .PHONY: flash
 flash: $(BINDIR)/$(TARGET_NAME).hex
 	$(AVRDUDESS) -u -c $(PROGRAMMER) -p $(FLASH_MCU) -P $(USB_PORT) -b $(PORT_SPEED) -V -U flash:w:"$(BINDIR)/$(TARGET_NAME).hex":a 
+
+.PHONY: eeprom
+eeprom: $(EEPROM_FILE_PATH)
+	$(AVRDUDESS) -u -c $(PROGRAMMER) -p $(FLASH_MCU) -P $(USB_PORT) -b $(PORT_SPEED) -V -U eeprom:w:"$(EEPROM_FILE_PATH_AND_NAME)":a
 
 .PHONY: clean
 clean:
