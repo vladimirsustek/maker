@@ -1,9 +1,8 @@
-
+ifdef OS
 AVR_GCC_DIR = C:\avr-gcc
-EEPROM_FILE_PATH_AND_NAME = EEPROM.eep
-#AVR_GCC_DIR = /home/vladimir/avr-gcc
-
-print-%  : ; @echo $* = $($*)
+else
+AVR_GCC_DIR = /home/vladimir/avr-gcc
+endif
 
 #OS equal to 'Windows_NT' for Windows machines
 ifdef OS
@@ -38,7 +37,9 @@ OBJ_DUMP_FLAG = -h -S
 MCU_NAME =atmega328p
 MCU_CLOCK =16000000
 OPTIMIZATIONS =-O0
+
 TEXT2INTELHEX_START_ADR =0000
+EEPROM_FILE_PATH_AND_NAME = EEPROM.eep
 
 #-c stands for "only compiler, no linking"
 CFLAGS=-c -Wall -mmcu=$(MCU_NAME) $(OPTIMIZATIONS) -DF_CPU=$(MCU_CLOCK) -g
@@ -120,3 +121,6 @@ else
 endif
 
 rebuild: clean | all
+
+print-%  : ; @echo $* = $($*)
+
