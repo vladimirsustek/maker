@@ -43,11 +43,11 @@ int main(void)
     printf("The number of the beast is %ld\n", demoNumber++);
 
     //uint8_t array[64] = "Juch Hody v Zelesicich!\n";
-    uint8_t readback[91] = {0};
+    uint8_t readback[51] = {0};
     //uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
 
     //eeprom.write(0, array, length);
-    eeprom.read(0, readback, 90);
+    eeprom.read(0u, readback, 50);
 
     printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
 
