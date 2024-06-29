@@ -1,6 +1,6 @@
 
 AVR_GCC_DIR = C:\avr-gcc
-EEPROM_FILE_PATH_AND_NAME = C:\VSC\Text2IntelHex\EEPROM.eep
+EEPROM_FILE_PATH_AND_NAME = EEPROM.eep
 #AVR_GCC_DIR = /home/vladimir/avr-gcc
 
 print-%  : ; @echo $* = $($*)
@@ -14,6 +14,7 @@ OBJ_DUMP =$(AVR_GCC_DIR)\bin\avr-objdump.exe
 INC_DIRS = -I$(AVR_GCC_DIR)\avr\include
 LIB_DIRS=-L$(AVR_GCC_DIR)\avr
 AVRDUDESS =C:\AVRDUDESS\avrdude.exe
+TEXT2INTELHEX = tools\Text2IntelHex.exe
 else
 CXX = $(AVR_GCC_DIR)/bin/avr-g++
 CXXLD = $(AVR_GCC_DIR)/bin/avr-g++
@@ -21,6 +22,7 @@ OBJ_COPY =$(AVR_GCC_DIR)/bin/avr-objcopy
 OBJ_DUMP =$(AVR_GCC_DIR)/bin/avr-objdump
 INC_DIRS = -I$(AVR_GCC_DIR)/avr/include
 LIB_DIRS=-L$(AVR_GCC_DIR)/avr
+TEXT2INTELHEX = tools/Text2IntelHex
 AVRDUDESS =
 endif
 
@@ -36,6 +38,7 @@ OBJ_DUMP_FLAG = -h -S
 MCU_NAME =atmega328p
 MCU_CLOCK =16000000
 OPTIMIZATIONS =-O0
+TEXT2INTELHEX_START_ADR =0000
 
 #-c stands for "only compiler, no linking"
 CFLAGS=-c -Wall -mmcu=$(MCU_NAME) $(OPTIMIZATIONS) -DF_CPU=$(MCU_CLOCK) -g
@@ -95,6 +98,10 @@ endif
 .PHONY: flash
 flash: $(BINDIR)/$(TARGET_NAME).hex
 	$(AVRDUDESS) -u -c $(PROGRAMMER) -p $(FLASH_MCU) -P $(USB_PORT) -b $(PORT_SPEED) -V -U flash:w:"$(BINDIR)/$(TARGET_NAME).hex":a 
+
+.PHONY: eeprom_convert
+eeprom_convert: tools/eeprom.txt
+	$(TEXT2INTELHEX) tools/eeprom.txt $(TEXT2INTELHEX_START_ADR) > eeprom.eep
 
 .PHONY: eeprom
 eeprom: $(EEPROM_FILE_PATH)
