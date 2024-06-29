@@ -22,7 +22,7 @@ OBJ_COPY =$(AVR_GCC_DIR)/bin/avr-objcopy
 OBJ_DUMP =$(AVR_GCC_DIR)/bin/avr-objdump
 INC_DIRS = -I$(AVR_GCC_DIR)/avr/include
 LIB_DIRS=-L$(AVR_GCC_DIR)/avr
-TEXT2INTELHEX = tools/Text2IntelHex
+TEXT2INTELHEX = ./tools/Text2IntelHex
 AVRDUDESS =
 endif
 
@@ -100,8 +100,8 @@ flash: $(BINDIR)/$(TARGET_NAME).hex
 	$(AVRDUDESS) -u -c $(PROGRAMMER) -p $(FLASH_MCU) -P $(USB_PORT) -b $(PORT_SPEED) -V -U flash:w:"$(BINDIR)/$(TARGET_NAME).hex":a 
 
 .PHONY: eeprom_convert
-eeprom_convert: tools/eeprom.txt
-	$(TEXT2INTELHEX) tools/eeprom.txt $(TEXT2INTELHEX_START_ADR) > eeprom.eep
+eeprom_convert: eeprom.txt
+	$(TEXT2INTELHEX) eeprom.txt $(TEXT2INTELHEX_START_ADR) > eeprom.eep
 
 .PHONY: eeprom
 eeprom: $(EEPROM_FILE_PATH)
