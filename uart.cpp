@@ -27,8 +27,8 @@
 volatile uint8_t rx_buff[UART_RX_BUFF_SIZE];
 volatile uint8_t rx_buff_wr_idx;
 volatile uint8_t rx_buff_rd_idx;
-volatile uint8_t rx_isr_tokens;
-volatile uint8_t overflow = 0; 
+volatile uint8_t rx_buff_records;
+volatile uint8_t rx_buff_overflow; 
 
 /***********************************************************************/
 /*****************    Private data     *********************************/
@@ -69,13 +69,13 @@ ISR(USART_RX_vect)
     uart_enter_critical();
 
     volatile uint8_t c = UDR0;
-    uint8_t next_wr_idx = (rx_buff_wr_idx+1) & (UART_RX_BUFF_SIZE-1);
+    volatile uint8_t next_wr_idx = (rx_buff_wr_idx+1) & (UART_RX_BUFF_SIZE-1);
 
-    if(next_wr_idx != rx_buff_rd_idx && overflow == 0)
+    if(next_wr_idx != rx_buff_rd_idx && rx_buff_overflow == 0)
     {
         if(c == '\n')
         {
-            rx_isr_tokens++;
+            rx_buff_records++;
         }
 
         rx_buff[rx_buff_wr_idx] = c;
@@ -85,8 +85,8 @@ ISR(USART_RX_vect)
     else
     {
         rx_buff[rx_buff_wr_idx] = '\n';
-        rx_isr_tokens++;
-        overflow = 1;
+        rx_buff_records++;
+        rx_buff_overflow = 1;
     }
 
     uart_exit_critical();
@@ -109,9 +109,12 @@ Uart::Uart(bool isr_enable_flag)
     UCSR0B |= (1 << RXEN0);
 
     memset(const_cast<uint8_t*>(rx_buff), 0, 128);
+
     rx_buff_wr_idx = 0u;
     rx_buff_rd_idx = 0u;
-    rx_isr_tokens = 0u;
+    rx_buff_records = 0u;
+    rx_buff_overflow = 0u;
+
 }
 
 Uart::~Uart()
@@ -145,13 +148,15 @@ uint16_t Uart::write(uint8_t* pData, uint16_t size)
 
 uint16_t Uart::readLine(uint8_t* pData, uint16_t size)
 {
-    if (nullptr == pData || size > UART_RX_BUFF_SIZE || rx_isr_tokens == 0)
+    if (nullptr == pData || size > UART_RX_BUFF_SIZE || rx_buff_records == 0)
     {
         return 0;
     }
     else
     {
         uint8_t bytes = 0;
+
+        uart_enter_critical();
 
         while(rx_buff_wr_idx != rx_buff_rd_idx)
         {            
@@ -165,25 +170,26 @@ uint16_t Uart::readLine(uint8_t* pData, uint16_t size)
 
             rx_buff_rd_idx = (rx_buff_rd_idx + 1) & (UART_RX_BUFF_SIZE - 1);
 
-            if(overflow)
+            /* When overflow happened, the write pointer was not moved (intentional), 
+               because this while loop condition would be met, so write pointer is now
+               moved after as the first character was processed */
+            if(rx_buff_overflow)
             {
-                overflow = 0;
+                rx_buff_overflow = 0;
                 rx_buff_wr_idx = (rx_buff_wr_idx + 1) & (UART_RX_BUFF_SIZE - 1);
             }
         }
 
-        rx_isr_tokens--;
+        rx_buff_records--;
+
+        uart_exit_critical();
+
         return bytes;
     }
 }
 
 uint16_t Uart::isRxISR(void)
 {
-    if(rx_isr_tokens)
-    {
-        rx_isr_tokens--;
-        return 1;
-    }
     return 0;
 }
 

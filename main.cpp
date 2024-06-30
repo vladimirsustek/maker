@@ -103,10 +103,7 @@ int main(void)
     {
         if((length = uart.readLine(buffer, 1)))
         {
-            printf("Length:%d\n", length);
-
             uart.write(buffer, length);
-            memset(buffer, 0, 64);
         }
         
     }
