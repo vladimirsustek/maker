@@ -20,7 +20,7 @@ int main(void)
     uint32_t demoNumber = 0;
 
     /* Initialize 57600baud Uart */
-    Uart uart = Uart(false);
+    Uart uart = Uart(true);
     /* After this you might call printf() as you are used to */
     UartPrintf stdPrintf = UartPrintf(uart);
 
@@ -49,7 +49,7 @@ int main(void)
     //eeprom.write(0, array, length);
     eeprom.read(0u, readback, 50);
 
-    printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
+    //printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
 
     /* Hvezdy jsou jak sedmikrasky */
     tone.playTone(Note::F_6, Duration::Quarter);
@@ -91,7 +91,25 @@ int main(void)
 #endif
     tim.enableBeep(false);
 
-    while(1);
+
+    uint8_t buffer[64];
+    uint16_t length;
+    
+    printf("Delay 15000 ms start\n");
+    tim.msDelay(15000);
+    printf("Delay 15000 ms stop\n");
+
+    while(1)
+    {
+        if((length = uart.readLine(buffer, 1)))
+        {
+            printf("Length:%d\n", length);
+
+            uart.write(buffer, length);
+            memset(buffer, 0, 64);
+        }
+        
+    }
 
     return 0;
 }

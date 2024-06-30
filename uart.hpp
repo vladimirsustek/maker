@@ -45,7 +45,8 @@ public:
     Uart(bool isr_enable_flag);
     ~Uart();
     uint16_t write(uint8_t* pData, uint16_t size);
-    uint16_t read(uint8_t* pData, uint16_t size);
+    uint16_t readLine(uint8_t* pData, uint16_t size);
+    uint16_t read(uint8_t*, uint16_t) {return 0;};
     uint16_t isRxISR(void);
     uint16_t isTxISR(void);
     uint16_t isTXBusy(void);
