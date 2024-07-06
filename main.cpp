@@ -6,6 +6,7 @@
 #include "core.hpp"
 #include "eeprom.hpp"
 
+
 extern "C"
 {
 #include <avr/io.h>
@@ -14,6 +15,8 @@ extern "C"
 #include <stdint.h>
 #include <stdio.h>
 }
+
+#include "cmd_dispatcher.hpp"
 
 int main(void)
 {
@@ -95,15 +98,20 @@ int main(void)
     uint8_t buffer[64];
     uint16_t length;
     
-    printf("Delay 15000 ms start\n");
-    tim.msDelay(15000);
-    printf("Delay 15000 ms stop\n");
+    //printf("Delay 15000 ms start\n");
+    //tim.msDelay(15000);
+    //printf("Delay 15000 ms stop\n");
+
+    ;
 
     while(1)
     {
         if((length = uart.readLine(buffer, 1)))
         {
-            uart.write(buffer, length);
+            buffer[length] = 0u;
+            //uart.write(buffer, length);
+            //CmdDispatch(const_cast<const uint8_t*>(buffer), length);
+            CmdDispatch(buffer, length);
         }
         
     }
