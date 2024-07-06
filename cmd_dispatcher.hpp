@@ -3,6 +3,6 @@
 
 #include "cmd_defs.hpp"
 
-uint8_t CmdDispatch(uint8_t* pStrCmd, uint8_t lng);
+uint8_t CmdDispatch(const uint8_t* const pStrCmd, const uint8_t lng);
 
 #endif // CMD_DISPATCHER_H_INCLUDED

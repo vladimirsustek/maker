@@ -17,22 +17,21 @@ static const CmdDisp_t cmdTable[CMD_TABLE_SIZE] = {
 
 };
 
-uint16_t CmdDispatch(uint8_t* pStrCmd, uint8_t lng) {
+uint16_t CmdDispatch(const uint8_t* const pStrCmd, const uint8_t lng) {
 
     uint16_t result = CMD_RET_UKN;
-    lng--;
 
     for(uint8_t idx = 0; idx < CMD_TABLE_SIZE; idx++) {
         if ((!memcmp(pStrCmd, cmdTable[idx].cmdMethod, CMD_METHOD_LNG-1)) &&
         !memcmp(pStrCmd + CMD_METHOD_LNG-1 + CMD_DELIMITER_LNG, cmdTable[idx].cmdName, CMD_NAME_LNG-1)) {
 
-            result = cmdTable[idx].cmdFunc(pStrCmd, lng);
+            result = cmdTable[idx].cmdFunc(pStrCmd, lng-1);
             printf("Match hit\n");
             break;
         }
     }
-    /* printf redirected to UART in uart_interface.c*/
-    //printf("<< %s  >> RET = 0x%04x\n", pStrCmd, result);
+    /* printf redirected to UART in the uartprintf. */
+    printf("<< %s  >> RET = 0x%04x\n", pStrCmd, result);
 
     return result;
 }
