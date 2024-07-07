@@ -155,6 +155,7 @@ public:
     Tone(Tim & timer);
     ~Tone() = default;
     void playTone(Note note, Duration duration);
+    void playTone(Note note, uint16_t duration);
     void setToneLength(uint16_t ms);
 private:
     Tim & timerDevice;

@@ -4,12 +4,9 @@
 #include "cmd_defs.hpp"
 
 /*** BASIC METHODS ***/
-#define CMD_METHOD_SET "ST"
-#define CMD_METHOD_GET "GT"
-#define CMD_METHOD_DO  "DO"
+const METHOD method = METHOD("PL"); //Play
 
-/*** FM-RX RDA5807M SUPPORTED COMMANDS ***/
-
-#define CMD_HELLOCMD_INIT "HELO"
+/** COMMANDS */
+const COMMAND command = COMMAND("TONE"); //Tone
 
 #endif // CMD_COMMANDS_H_INCLUDED

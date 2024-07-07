@@ -66,8 +66,6 @@ static void uart_exit_critical(void) {
 
 ISR(USART_RX_vect)
 {
-    uart_enter_critical();
-
     volatile uint8_t c = UDR0;
     volatile uint8_t next_wr_idx = (rx_buff_wr_idx+1) & (UART_RX_BUFF_SIZE-1);
 
@@ -88,8 +86,6 @@ ISR(USART_RX_vect)
         rx_buff_records++;
         rx_buff_overflow = 1;
     }
-
-    uart_exit_critical();
 }
 
 Uart::Uart(bool isr_enable_flag)

@@ -1,37 +1,37 @@
 #include "cmd_commands.hpp"
 #include "cmd_defs.hpp"
+#include "cmd_dispatcher.hpp"
+#include "tone_command.hpp"
 
-#define CMD_TABLE_SIZE  (1u)
+constexpr uint CMD_TABLE_SIZE = 1u;
 
-uint16_t HelloCommand(const uint8_t* const ptr, const uint8_t lng)
-{
-    (void)ptr;
-    (void)lng;
-    printf("HelloCommand:%s\n", ptr);
-    return 0;
-}
+const CmdDisp_t cmdTable[CMD_TABLE_SIZE] = {
 
-static const CmdDisp_t cmdTable[CMD_TABLE_SIZE] = {
-
-/*01*/    {CMD_METHOD_DO,  CMD_HELLOCMD_INIT, HelloCommand}
+/*01*/    {method,  command, PlayTone}
 
 };
 
-uint16_t CmdDispatch(const uint8_t* const pStrCmd, const uint8_t lng) {
+CommandDispatcher::CommandDispatcher(Peripherals& peripherals):
+
+    peripherals(peripherals)
+{
+
+}
+
+uint16_t CommandDispatcher::Dispatch(const uint8_t* const pStrCmd, const uint8_t lng) {
 
     uint16_t result = CMD_RET_UKN;
 
     for(uint8_t idx = 0; idx < CMD_TABLE_SIZE; idx++) {
-        if ((!memcmp(pStrCmd, cmdTable[idx].cmdMethod, CMD_METHOD_LNG-1)) &&
-        !memcmp(pStrCmd + CMD_METHOD_LNG-1 + CMD_DELIMITER_LNG, cmdTable[idx].cmdName, CMD_NAME_LNG-1)) {
+        if ((!memcmp(pStrCmd, cmdTable[idx].method.word, CMD_METHOD_LNG)) &&
+        !memcmp(pStrCmd + CMD_METHOD_LNG + CMD_DELIMITER_LNG, cmdTable[idx].command.word, CMD_NAME_LNG)) {
 
-            result = cmdTable[idx].cmdFunc(pStrCmd, lng-1);
-            printf("Match hit\n");
+            result = cmdTable[idx].cmdFunc(pStrCmd, lng, &peripherals);
             break;
         }
     }
     /* printf redirected to UART in the uartprintf. */
-    printf("<< %s  >> RET = 0x%04x\n", pStrCmd, result);
+    printf("<< %s>> RET = 0x%04x\n", pStrCmd, result);
 
     return result;
 }

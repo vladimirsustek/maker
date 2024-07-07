@@ -92,26 +92,22 @@ int main(void)
     tone.playTone(Note::CisDb_7, Duration::Quarter);
     tone.playTone(Note::CisDb_7, Duration::Quarter);
 #endif
-    tim.enableBeep(false);
-
 
     uint8_t buffer[64];
     uint16_t length;
     
-    //printf("Delay 15000 ms start\n");
-    //tim.msDelay(15000);
-    //printf("Delay 15000 ms stop\n");
+    Peripherals peripherals =Peripherals();
+    peripherals.tone = &tone;
 
-    ;
+    CommandDispatcher dispatcher = CommandDispatcher(peripherals);
 
     while(1)
     {
         if((length = uart.readLine(buffer, 1)))
         {
             buffer[length] = 0u;
-            //uart.write(buffer, length);
-            //CmdDispatch(const_cast<const uint8_t*>(buffer), length);
-            CmdDispatch(buffer, length);
+            //printf("%s", buffer);
+            dispatcher.Dispatch(buffer, length);
         }
         
     }

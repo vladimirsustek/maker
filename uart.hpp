@@ -32,7 +32,7 @@ extern "C"
 
 #define RX_ISR_ENAB             (uint8_t)(1u)
 #define RX_ISR_DISAB            (uint8_t)(0u)
-#define UART_RX_BUFF_SIZE       (uint8_t)(16u)
+#define UART_RX_BUFF_SIZE       (uint8_t)(64u)
 
 #define UART_ISR_MODE           (uint8_t)(1u)
 /***********************************************************************/
