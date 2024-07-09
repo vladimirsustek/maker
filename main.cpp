@@ -41,7 +41,6 @@ private:
 
 InnerDependency* InnerDependency::instance = nullptr;
 
-
 class Singleton
 {
 private:
@@ -66,8 +65,14 @@ public:
 
 Singleton* Singleton::instance = nullptr;
 
+template <typename T> T myMax(T x, T y)
+{
+    return (x > y) ? x : y;
+}
+
 int main(void)
 {
+
     uint32_t demoNumber = 0;
 
     /* Initialize 57600baud Uart */
@@ -90,6 +95,8 @@ int main(void)
     printf("Value is is: %d\n", singleton1->GetVar());
     singleton1->ChangeVar(999);
     printf("Value is is: %d\n", singleton1->GetVar());
+
+    printf("myMax %d\n", myMax<int>(3,7));
 
     /* 1kHz timer used for msDelay*/
     Tim tim = Tim();
