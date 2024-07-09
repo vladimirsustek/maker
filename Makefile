@@ -43,6 +43,9 @@ EEPROM_FILE_PATH_AND_NAME = EEPROM.eep
 
 #-c stands for "only compiler, no linking"
 CFLAGS=-c -Wall -mmcu=$(MCU_NAME) $(OPTIMIZATIONS) -DF_CPU=$(MCU_CLOCK) -g
+CFLAGS += -std=gnu++11
+CFLAGS += -fno-threadsafe-statics
+
 LD_FLAGS_1 =-mmcu=$(MCU_NAME) -Wl,-Map=
 LD_FLAGS_2 = ,--cref
 
