@@ -32,7 +32,7 @@ extern "C"
 
 #define RX_ISR_ENAB             (uint8_t)(1u)
 #define RX_ISR_DISAB            (uint8_t)(0u)
-#define UART_RX_BUFF_SIZE       (uint8_t)(16u)
+#define UART_RX_BUFF_SIZE       (uint8_t)(64u)
 
 #define UART_ISR_MODE           (uint8_t)(1u)
 /***********************************************************************/
@@ -42,14 +42,21 @@ extern "C"
 class Uart : IPeripheral
 {
 public:
-    Uart(bool isr_enable_flag);
-    ~Uart();
+    Uart& operator=(const Uart& other) = delete;
+    Uart(Uart & t) = delete;
+    static Uart* getInstance();
+    void enableRxISR(bool en);
     uint16_t write(uint8_t* pData, uint16_t size);
     uint16_t readLine(uint8_t* pData, uint16_t size);
     uint16_t read(uint8_t*, uint16_t) {return 0;};
     uint16_t isRxISR(void);
     uint16_t isTxISR(void);
     uint16_t isTXBusy(void);
+    void enable8BitUart();
+private:
+    Uart() = default;
+    ~Uart() = default;
+    static Uart* instance;
 };
 
 #endif // UART_HPP

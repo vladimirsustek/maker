@@ -152,12 +152,15 @@ enum class Duration
 class Tone
 {
 public:
-    Tone(Tim & timer);
-    ~Tone() = default;
+    static Tone* getInstance(Tim* timer);
     void playTone(Note note, Duration duration);
+    void playTone(uint16_t freq, uint16_t duration);
     void setToneLength(uint16_t ms);
 private:
-    Tim & timerDevice;
+    Tone() = default;
+    ~Tone() = default;
+    Tim* timerDevice;
+    static Tone *instance;
     uint16_t noteLength;
 };
 

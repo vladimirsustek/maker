@@ -4,6 +4,7 @@ extern "C"
     #include <stdio.h>
     #include <avr/io.h>
     #include <avr/interrupt.h>
+    #include "uartc_wrapper.h"
 }
 
 #include "uartprintf.hpp"
@@ -29,20 +30,7 @@ extern "C"
  * Note that TX line is always enabled and disabled
    after each transmission (function call)*/
 static int uart_putchar(char c, FILE *stream) {
-
-    /* Enable TX line */
-    UCSR0B|= (1 << TXEN0);
-
-    /* Start UART transmission - fill buffer*/
-    UDR0 = c;
-
-    while (!(UCSR0A & (1 << UDRE0))){
-        /* Do nothing - stuck here*/
-    }
-
-    /* Disable TX line */
-    UCSR0B&=~(1 << TXEN0);
-
+    uart_write(c);
     return 0;
 }
 
@@ -51,7 +39,7 @@ static FILE customStdOut = FDEV_SETUP_STREAM(uart_putchar, NULL,_FDEV_SETUP_WRIT
 
 }
 
-UartPrintf::UartPrintf(Uart &uartInstance):
+UartPrintf::UartPrintf(Uart* uartInstance):
     /* Reference is not used, however ensures UART exists 
     before redirection is created -> therefore UART was initialized*/
     uart(uartInstance)

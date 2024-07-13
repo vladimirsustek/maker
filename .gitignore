@@ -5,3 +5,4 @@ Bin/
 *.map
 *.elf
 *.hex
+/.vscode/settings.json

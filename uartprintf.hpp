@@ -6,10 +6,10 @@
 class UartPrintf 
 {
 public:
-    UartPrintf(Uart& uartInstance);
+    UartPrintf(Uart* uartInstance);
     ~UartPrintf() = default;
 private:
-    Uart uart;
+    Uart* uart;
 };
 
 #endif
