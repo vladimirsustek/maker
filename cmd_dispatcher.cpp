@@ -7,16 +7,9 @@ constexpr uint CMD_TABLE_SIZE = 1u;
 
 const CmdDisp_t cmdTable[CMD_TABLE_SIZE] = {
 
-/*01*/    {method,  command, PlayTone}
+/*01*/    {method,  command, TonePlay}
 
 };
-
-CommandDispatcher::CommandDispatcher(Peripherals& peripherals):
-
-    peripherals(peripherals)
-{
-
-}
 
 uint16_t CommandDispatcher::Dispatch(const uint8_t* const pStrCmd, const uint8_t lng) {
 
@@ -26,12 +19,12 @@ uint16_t CommandDispatcher::Dispatch(const uint8_t* const pStrCmd, const uint8_t
         if ((!memcmp(pStrCmd, cmdTable[idx].method.word, CMD_METHOD_LNG)) &&
         !memcmp(pStrCmd + CMD_METHOD_LNG + CMD_DELIMITER_LNG, cmdTable[idx].command.word, CMD_NAME_LNG)) {
 
-            result = cmdTable[idx].cmdFunc(pStrCmd, lng, &peripherals);
+            result = cmdTable[idx].cmdFunc(pStrCmd, lng);
             break;
         }
     }
     /* printf redirected to UART in the uartprintf. */
-    printf("<< %s>> RET = 0x%04x\n", pStrCmd, result);
+    //printf("<< %s>> RET = 0x%04x\n", pStrCmd, result);
 
     return result;
 }

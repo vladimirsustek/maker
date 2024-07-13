@@ -2,50 +2,35 @@
 
 /* Clock frequency of timer F_CPU/PRESCALER = 16MHz/64
    in case of any change, recalculate this constant !!! */
-#define BEEP_CLOCK          (uint32_t)(250000)
+constexpr uint32_t BEEP_CLOCK = 250000u;
 
 /* Incremented variable by TIMER0_COMPA_vect - system tick*/
 static volatile uint32_t sys_tick = 0;
+
+Tim* Tim::instance = nullptr;
 
 ISR(TIMER0_COMPA_vect) {
     sys_tick++;
 }
 
-Tim::Tim() {
+Tim* Tim::getInstance()
+{
 
-    /* TIM0 - ATmega328p 8-bit timer *************/
+    if(instance == nullptr)
+    {
+        static Tim singletonTim;
+        singletonTim.enableCTCTim0();
+        instance = &singletonTim;
+    }
 
-    /* WGM01: CTC mode - clear timer of compare match.
-    This means that timer is incremented to value OCR1A,
-    when the value is reached, interrupt is called and
-    timer is cleared
-    */
-    TCCR0A |= (1 << WGM01);
-    /* TCCR0B: CS01, CS00 sets 64x prescaler */
-    TCCR0B |= (1 << CS01)|(1 << CS00);
-    /* Enable timer interrupt */
-    TIMSK0|= (1 << OCIE0A);
-    /* Set the compare value based on calculation:
-       freq = CLOCK/(PRESCALER * OCR1A)
-       in case of 16MHz Clock and 64x prescaler
-       the frequency of counting is 250kHZ what
-       means that if timer counts from 0 to 249,
-       value 249 is reached with frequency 1kHZ*/
-    OCR0A = 249;
-}
-
-Tim::~Tim() {
-
-    TCCR0A &=~(1 << WGM01);
-    TIMSK0 &=~(1 << OCIE0A);
-
+    return instance;
 }
 
 uint32_t Tim::getTick(void) {
     uint32_t tick = 0;
     /* Disable interrupt for correct
     reading of the sys_tick 32-bit value*/
-    TIMSK0&=~(1 << OCIE0A);
+    TIMSK0 &=~(1 << OCIE0A);
     tick = sys_tick;
     /* Enable-back timer interrupt */
     TIMSK0|= (1 << OCIE0A);
@@ -114,4 +99,33 @@ void Tim::enableBeep(bool state) {
         TCCR1B &= ~(1 << WGM12);
         TCCR1A &= ~(1 << COM1A0);
     }
+}
+
+void Tim::enableCTCTim0()
+{
+        /* TIM0 - ATmega328p 8-bit timer *************/
+
+        /* WGM01: CTC mode - clear timer of compare match.
+        This means that timer is incremented to value OCR1A,
+        when the value is reached, interrupt is called and
+        timer is cleared
+        */
+        TCCR0A |= (1 << WGM01);
+        /* TCCR0B: CS01, CS00 sets 64x prescaler */
+        TCCR0B |= (1 << CS01)|(1 << CS00);
+        /* Enable timer interrupt */
+        TIMSK0|= (1 << OCIE0A);
+        /* Set the compare value based on calculation:
+        freq = CLOCK/(PRESCALER * OCR1A)
+        in case of 16MHz Clock and 64x prescaler
+        the frequency of counting is 250kHZ what
+        means that if timer counts from 0 to 249,
+        value 249 is reached with frequency 1kHZ*/
+        OCR0A = 249;
+}
+
+void Tim::disableTim0()
+{
+    TCCR0A &=~(1 << WGM01);
+    TIMSK0 &=~(1 << OCIE0A);
 }

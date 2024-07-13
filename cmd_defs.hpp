@@ -1,8 +1,6 @@
 #ifndef CMD_DEFS_HPP
 #define CMD_DEFS_HPP
 
-#include "cmd_peripherals.hpp"
-
 extern "C"
 {
     #include "string.h"
@@ -32,7 +30,7 @@ constexpr uint CMD_RET_OK =0x0;
 constexpr uint CMD_RET_ERR=0xFFFF;
 constexpr uint CMD_RET_UKN=0xF0F0;
 
-typedef uint16_t (*pfn_u8_cpuc8cu8)(const uint8_t* const, const uint8_t lng, Peripherals *hardware);
+typedef uint16_t (*pfn_u8_cpuc8cu8)(const uint8_t* const, const uint8_t lng);
 
 class METHOD
 {

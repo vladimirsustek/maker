@@ -1,6 +1,8 @@
 #include "tone_command.hpp"
+#include "tone.hpp"
+#include "uart.hpp"
 
-uint16_t PlayTone(const uint8_t* const pStrCmd, const uint8_t lng, Peripherals* hardware)
+uint16_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng)
 {
     if ((CMD_METHOD_LNG + CMD_NAME_LNG +
          CMD_DELIMITER_LNG*3 + CMD_ARG5_LNG*2+
@@ -8,6 +10,8 @@ uint16_t PlayTone(const uint8_t* const pStrCmd, const uint8_t lng, Peripherals* 
 
         return CMD_RET_ERR;
     }
+
+    char str[17] = "TonePlayReached\n";
 
     uint16_t freq = (pStrCmd[CMD_ARG_OFFSET + 0] - '0')*10000;
 
@@ -23,7 +27,12 @@ uint16_t PlayTone(const uint8_t* const pStrCmd, const uint8_t lng, Peripherals* 
     duration += (pStrCmd[CMD_ARG_OFFSET + 9] - '0')*10;
     duration += (pStrCmd[CMD_ARG_OFFSET + 10] - '0')*1;
 
-    hardware->tone->playTone(static_cast<Note>(freq), duration);
+    Tim* timDevice = Tim::getInstance();
+    Tone* toneDevice = Tone::getInstance(timDevice);
+    Uart* uartDevice = Uart::getInstance();
+
+    toneDevice->playTone(freq, duration);
+    uartDevice->write(reinterpret_cast<uint8_t*>(str), 16);
 
     return 0;
 }

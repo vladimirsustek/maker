@@ -14,14 +14,18 @@ extern "C"
 class Tim
 {
 public:
-    Tim();
-    ~Tim();
+    static Tim* getInstance();
     uint32_t getTick();
     void msDelay(uint32_t delay); 
     void configureBeepPins(void);
     void setBeepFrequency(uint16_t frequency);
     void enableBeep(bool enable);
-
+private:
+    ~Tim() = default;
+    Tim() = default;
+    void enableCTCTim0();
+    void disableTim0();
+    static Tim *instance;
 };
 
 #endif

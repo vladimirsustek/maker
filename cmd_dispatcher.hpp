@@ -7,10 +7,9 @@
 class CommandDispatcher
 {
 public: 
-    CommandDispatcher(Peripherals& peripherals);
+    CommandDispatcher() = default;
+    ~CommandDispatcher() = default;
     uint16_t Dispatch(const uint8_t* const pStrCmd, const uint8_t lng);
-private:
-    Peripherals& peripherals;
 };
 
 #endif // CMD_DISPATCHER_H_INCLUDED

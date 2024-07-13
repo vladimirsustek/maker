@@ -8,6 +8,7 @@
 /*****************    Includes   ***************************************/
 /***********************************************************************/
 #include "uart.hpp"
+#include "assert.h"
 
 /***********************************************************************/
 /*****************    Private macro *  *********************************/
@@ -29,6 +30,8 @@ volatile uint8_t rx_buff_wr_idx;
 volatile uint8_t rx_buff_rd_idx;
 volatile uint8_t rx_buff_records;
 volatile uint8_t rx_buff_overflow; 
+
+Uart* Uart::instance = nullptr;
 
 /***********************************************************************/
 /*****************    Private data     *********************************/
@@ -88,34 +91,22 @@ ISR(USART_RX_vect)
     }
 }
 
-Uart::Uart(bool isr_enable_flag)
+Uart* Uart::getInstance()
 {
-    /* Use 8 - bit size of transaction symbol */
-    UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
-    /* Upper part of bitrate 57600*/
-    UBRR0H |= (BAUD_PRESCALE >> 8);
-    /* Lower part of bitrate 57600 */
-    UBRR0L |= BAUD_PRESCALE;
+    if(instance == nullptr)
+    {
+        static Uart singletonUart;
+        singletonUart.enable8BitUart();
+        instance = reinterpret_cast<Uart*>(&singletonUart);
+    }
+    return instance;
+}
+void Uart::enableRxISR(bool en)
+{
     /* Enable Interrupt on receive */
-    if(isr_enable_flag) {
+    if(en) {
             UCSR0B |= (1 << RXCIE0);
     }
-    /* Force off the TX and RX for further enabling */
-    UCSR0B &= ~(1 << TXEN0);
-    UCSR0B |= (1 << RXEN0);
-
-    memset(const_cast<uint8_t*>(rx_buff), 0, 128);
-
-    rx_buff_wr_idx = 0u;
-    rx_buff_rd_idx = 0u;
-    rx_buff_records = 0u;
-    rx_buff_overflow = 0u;
-
-}
-
-Uart::~Uart()
-{
-    
 }
 
 uint16_t Uart::write(uint8_t* pData, uint16_t size)
@@ -212,6 +203,28 @@ uint16_t Uart::isTXBusy(void)
 extern "C" void __cxa_pure_virtual(void) 
 {
     while(1);
+}
+
+void Uart::enable8BitUart()
+{
+    /* Use 8 - bit size of transaction symbol */
+    UCSR0C |= (1 << UCSZ00) | (1 << UCSZ01);
+    /* Upper part of bitrate 57600*/
+    UBRR0H |= (BAUD_PRESCALE >> 8);
+    /* Lower part of bitrate 57600 */
+    UBRR0L |= BAUD_PRESCALE;
+
+    /* Force off the TX and RX for further enabling */
+    UCSR0B &= ~(1 << TXEN0);
+    UCSR0B |= (1 << RXEN0);
+
+    /* Initialize ring buffer */
+    memset(const_cast<uint8_t*>(rx_buff), 0, 128);
+
+    rx_buff_wr_idx = 0u;
+    rx_buff_rd_idx = 0u;
+    rx_buff_records = 0u;
+    rx_buff_overflow = 0u;
 }
 
 
