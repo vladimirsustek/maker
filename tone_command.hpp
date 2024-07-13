@@ -4,5 +4,6 @@
 #include "cmd_defs.hpp"
 
 uint16_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng);
+uint16_t PlaySedmikrasky(const uint8_t* const pStrCmd, const uint8_t lng);
 
 #endif

@@ -9,7 +9,8 @@ const METHOD method_read = METHOD("RD");
 const METHOD method_write = METHOD("WR");
 
 /** COMMANDS */
-const COMMAND cmd_tone = COMMAND("TONE"); //Tone
+const COMMAND cmd_tone = COMMAND("TONE");
+const COMMAND cmd_sedmikrasky = COMMAND("SDMK");
 const COMMAND cmd_data = COMMAND("EEPR");
 
 #endif // CMD_COMMANDS_H_INCLUDED

@@ -1,6 +1,45 @@
 #include "tone_command.hpp"
 #include "tone.hpp"
-#include "uart.hpp"
+
+struct Song
+{
+    Note note;
+    Duration duration;
+};
+
+const Song Sedmikrasky[24]
+{
+    /* Hvezdy jsou jak sedmikrasky */
+    {Note::F_6, Duration::Quarter},
+    {Note::AesBb_6, Duration::Quarter},
+    {Note::DisEb_7, Duration::Quarter},
+    {Note::CisDb_7, Duration::Quarter},
+    {Note::E_7, Duration::Quarter},
+    {Note::DisEb_7, Duration::Quarter},
+    {Note::CisDb_7, Duration::Quarter},
+    {Note::AesBb_6, Duration::Quarter},
+    /* nad Brnem */
+    {Note::GisAb_6, Duration::Quarter},
+    {Note::AesBb_6, Duration::Quarter},
+    {Note::F_6, Duration::Half},
+    {Note::F_6, Duration::Half},
+    {Note::None, Duration::Half},
+    /* noc, muj mily */
+    {Note::E_6, Duration::Quarter},
+    {Note::FisGb_6, Duration::Quarter},
+    {Note::AesBb_6, Duration::Quarter},
+    {Note::CisDb_7, Duration::Quarter},
+    /* dobrou */
+    {Note::CisDb_7, Duration::Half},
+    {Note::DisEb_7, Duration::Quarter},
+    {Note::AesBb_6, Duration::Quarter},
+    /* noc */
+    {Note::CisDb_7, Duration::Full},
+    {Note::CisDb_7, Duration::Half},
+    /* -pomlka- */
+    {Note::CisDb_7, Duration::Quarter},
+    {Note::CisDb_7, Duration::Quarter}
+};
 
 uint16_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng)
 {
@@ -10,8 +49,6 @@ uint16_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng)
 
         return CMD_RET_ERR;
     }
-
-    char str[17] = "TonePlayReached\n";
 
     uint16_t freq = (pStrCmd[CMD_ARG_OFFSET + 0] - '0')*10000;
 
@@ -29,10 +66,29 @@ uint16_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng)
 
     Tim* timDevice = Tim::getInstance();
     Tone* toneDevice = Tone::getInstance(timDevice);
-    Uart* uartDevice = Uart::getInstance();
 
     toneDevice->playTone(freq, duration);
-    uartDevice->write(reinterpret_cast<uint8_t*>(str), 16);
 
+    return 0;
+}
+
+uint16_t PlaySedmikrasky(const uint8_t* const pStrCmd, const uint8_t lng)
+{
+    if ((CMD_METHOD_LNG + CMD_NAME_LNG +
+        CMD_DELIMITER_LNG*1 +
+        CMD_EOL_LNG) != lng) {
+
+    return CMD_RET_ERR;
+}
+    (void)pStrCmd;
+    (void)lng;
+
+    Tim* timDevice = Tim::getInstance();
+    Tone* toneDevice = Tone::getInstance(timDevice);
+
+    for(uint16_t idx = 0; idx < 24; idx++)
+    {
+        toneDevice->playTone(Sedmikrasky[idx].note, Sedmikrasky[idx].duration);
+    }    
     return 0;
 }
