@@ -5,18 +5,15 @@
 #include "tone.hpp"
 #include "core.hpp"
 #include "eeprom.hpp"
-
+#include "cmd_dispatcher.hpp"
 
 extern "C"
 {
 #include <avr/io.h>
-//#include <util/delay.h>
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 }
-
-#include "cmd_dispatcher.hpp"
 
 template <typename T> T myMax(T x, T y)
 {
@@ -43,29 +40,16 @@ int main(void)
     Tone* tone = Tone::getInstance(tim);
 
     Gpio gpioPB5 = Gpio(GPIO::GpioPort::IO_PORTB, GPIO::GpioPin::Pin5, GPIO::GpioDirection::Output);
-    Gpio gpioPC4 = Gpio(GPIO::GpioPort::IO_PORTC, GPIO::GpioPin::Pin4, GPIO::GpioDirection::Output);
-    gpioPC4.set(true);
-
+    gpioPB5.set(false);
     /* Enable all interrupts within Atmega328p*/
     Core::enableInterrupts();
 
-    /* Show up, the printf-UART redirection works */
-    //uint8_t array[64] = "Juch Hody v Zelesicich!\n";
-    uint8_t readback[51] = {0};
-    //uint16_t length = static_cast<uint16_t>(strlen(reinterpret_cast<char*>(array)));
-
-    //eeprom.write(0, array, length);
-    Eeprom* eeprom = Eeprom::getInstance();
-    eeprom->read(0u, readback, 50);
-
-    //printf("Readback: %s", const_cast<const char*>(reinterpret_cast<char*>(readback)));
-
-    /* Hvezdy jsou jak sedmikrasky */
     tone->playTone(Note::F_6, Duration::Quarter);
     tone->playTone(Note::AesBb_6, Duration::Quarter);
 
     CommandDispatcher dispatcher = CommandDispatcher();
 
+    uint32_t prevTick = 0;
     while(1)
     {
         if((length = uart->readLine(buffer, 1)))
@@ -74,6 +58,21 @@ int main(void)
             uart->write(buffer, length);
             dispatcher.Dispatch(buffer, length);
 
+        }
+
+        if(tim->getTick() > prevTick + 100)
+        {
+            prevTick = tim->getTick();
+            static uint16_t cnt = 0;
+            if(!cnt)
+            {
+                gpioPB5.set(true);
+            }
+            else
+            {
+                gpioPB5.set(false);
+            }
+            cnt = (cnt + 1) & 7;
         }
     }
     return 0;

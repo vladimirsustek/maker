@@ -7,7 +7,9 @@ struct Song
     Duration duration;
 };
 
-const Song Sedmikrasky[24]
+constexpr uint16_t SEDMIKRASKY_LNG = 24;
+
+const Song Sedmikrasky[SEDMIKRASKY_LNG]
 {
     /* Hvezdy jsou jak sedmikrasky */
     {Note::F_6, Duration::Quarter},
@@ -86,7 +88,7 @@ uint16_t PlaySedmikrasky(const uint8_t* const pStrCmd, const uint8_t lng)
     Tim* timDevice = Tim::getInstance();
     Tone* toneDevice = Tone::getInstance(timDevice);
 
-    for(uint16_t idx = 0; idx < 24; idx++)
+    for(uint16_t idx = 0; idx < SEDMIKRASKY_LNG; idx++)
     {
         toneDevice->playTone(Sedmikrasky[idx].note, Sedmikrasky[idx].duration);
     }    
