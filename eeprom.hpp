@@ -14,17 +14,17 @@ extern "C"
 
 constexpr uint16_t EEPROM_MAX_SIZE = 1024;
 
-class EEPROM
+class Eeprom
 {
 public:
-    static EEPROM* getInstance();
+    static Eeprom* getInstance();
     void write(uint16_t address, uint8_t* data, uint16_t length);
     void read(uint16_t address, uint8_t* data, uint16_t length);
     void configureEEPROM();
 private:
-    static EEPROM* instance;
-    EEPROM() = default;
-    ~EEPROM() = default;
+    static Eeprom* instance;
+    Eeprom() = default;
+    ~Eeprom() = default;
 };
 
 #endif

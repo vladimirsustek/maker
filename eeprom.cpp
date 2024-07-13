@@ -7,20 +7,20 @@ void EEPROM::write(uint16_t address, uint8_t* data, uint16_t length)
     eeprom_write_byte(reinterpret_cast<uint8_t*>(0), 0xAA);
 }
 */
-EEPROM* EEPROM::instance = nullptr;
+Eeprom* Eeprom::instance = nullptr;
 
-EEPROM* EEPROM::getInstance()
+Eeprom* Eeprom::getInstance()
 {
     if(instance == nullptr)
     {
-        static EEPROM singletonEEPROM;
+        static Eeprom singletonEEPROM;
         singletonEEPROM.configureEEPROM();
         instance = &singletonEEPROM;
     }
     return instance;
 }
 
-void EEPROM::write(uint16_t address, uint8_t* data, uint16_t length)
+void Eeprom::write(uint16_t address, uint8_t* data, uint16_t length)
 {
     uint16_t lng = length;
 
@@ -42,7 +42,7 @@ void EEPROM::write(uint16_t address, uint8_t* data, uint16_t length)
 }
 
 // Find out how to implement eeprom_busy_wait, eeprom_write_byte
-void EEPROM::read(uint16_t address, uint8_t* data, uint16_t length)
+void Eeprom::read(uint16_t address, uint8_t* data, uint16_t length)
 {
     uint16_t lng = length;
     uint16_t idx = 0;
@@ -62,7 +62,7 @@ void EEPROM::read(uint16_t address, uint8_t* data, uint16_t length)
     }
 }
 
-void EEPROM::configureEEPROM()
+void Eeprom::configureEEPROM()
 {
     /* Erase and write wihin a single cycle (3.4ms) */
     EECR &= ~((1 << EEPM0) | (1 << EEPM0));
