@@ -20,10 +20,12 @@ public:
     void configureBeepPins(void);
     void setBeepFrequency(uint16_t frequency);
     void enableBeep(bool enable);
+    void enableFastPWM_OC2B(bool en);
+    void setPWM_OC2B(uint8_t period);
 private:
     ~Tim() = default;
     Tim() = default;
-    void enableCTCTim0();
+    void enable8BitCTCTim0();
     void disableTim0();
     static Tim *instance;
 };

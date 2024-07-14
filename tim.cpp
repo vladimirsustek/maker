@@ -19,7 +19,7 @@ Tim* Tim::getInstance()
     if(instance == nullptr)
     {
         static Tim singletonTim;
-        singletonTim.enableCTCTim0();
+        singletonTim.enable8BitCTCTim0();
         instance = &singletonTim;
     }
 
@@ -101,7 +101,7 @@ void Tim::enableBeep(bool state) {
     }
 }
 
-void Tim::enableCTCTim0()
+void Tim::enable8BitCTCTim0()
 {
         /* TIM0 - ATmega328p 8-bit timer *************/
 
@@ -128,4 +128,37 @@ void Tim::disableTim0()
 {
     TCCR0A &=~(1 << WGM01);
     TIMSK0 &=~(1 << OCIE0A);
+}
+
+void Tim::enableFastPWM_OC2B(bool en)
+{
+    if(en)
+    {
+        /* Non inverting mode for OC2B (PORTD.3)*/
+        TCCR2A |= (1 << COM2B1);
+        /* Enable PORTD.3 as an output */
+        DDRD |= (1 << PIN3);
+        /* Enabling fast PWM */
+        TCCR2A |= (1 << WGM21)|(1 << WGM20);
+        /* Prescaler 1024 (16M/1024 = 250kHz)*/
+        TCCR2B |= (1 << CS22)| (1 << CS21)|(1 << CS20);
+    }
+    else
+    {
+        /* Prescaler 0 -> no clock source, WGM2 clear (WGM2 = 0 does not ensure no waveform)*/
+        TCCR2B &= ~((1 << CS22)| (1 << CS21)|(1 << CS20) | (1 << WGM22));
+        /* Clearing WGM1:0 forcing Timer to 'NORMAL MODE' */
+        TCCR2A &= ~((1 << WGM21)|(1 << WGM20));
+        /* Disconnecting Timer from OC2B */
+        TCCR2A &= ~((1 << COM2B1)|(1 << WGM20));
+        /* Set PORTD.3 as an input */
+        DDRD &= ~(1 << PIN3);
+    }
+        /* Setting PWM to 0 */
+        OCR2B = 0;
+}
+
+void Tim::setPWM_OC2B(uint8_t period)
+{
+    OCR2B = period;
 }
