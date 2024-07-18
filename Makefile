@@ -26,7 +26,7 @@ AVRDUDESS =
 endif
 
 #USB Port
-USB_PORT =COM11
+USB_PORT =COM3
 PORT_SPEED =57600
 FLASH_MCU =m328p
 PROGRAMMER =arduino
@@ -66,8 +66,8 @@ TARGET_NAME=Maker
 EXECUTABLE=bin/$(TARGET_NAME).elf
 MAP_FILE=bin/$(TARGET_NAME).map
 
-.PHONY: all
-all: $(SOURCES) $(EXECUTABLE)
+.PHONY: build
+build: $(SOURCES) $(EXECUTABLE)
 
 # '| build_directory' means that build_directory is called before 
 # "EXECUTABLES" is created (MUST BE).
@@ -123,7 +123,7 @@ else
 	@if [ -d "$(BINDIR)/" ]; then rm -r $(BINDIR)/; else echo "$(BINDIR)/ does not exists"; fi
 endif
 
-rebuild: clean | all
+rebuild: clean | build
 
 print-%  : ; @echo $* = $($*)
 

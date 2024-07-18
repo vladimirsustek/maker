@@ -5,6 +5,8 @@
 #include "tone.hpp"
 #include "core.hpp"
 #include "eeprom.hpp"
+#include "spi.hpp"
+
 #include "cmd_dispatcher.hpp"
 
 extern "C"
@@ -38,6 +40,11 @@ int main(void)
 
     /* After this you might call printf() as you are used to */
     printf("myMax %d\n", myMax<int>(3,7));
+    printf("TBD:\n"
+    "   -SPI\n"
+    "   -I2C\n"
+    "   -WDG\n"
+    "   -FLASH\n");
 
     /* Timer used for ms_delay, tone and PWM */
     Tim *tim = Tim::getInstance();

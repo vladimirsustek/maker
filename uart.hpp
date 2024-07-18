@@ -52,10 +52,10 @@ public:
     uint16_t isRxISR(void);
     uint16_t isTxISR(void);
     uint16_t isTXBusy(void);
-    void enable8BitUart();
 private:
     Uart() = default;
     ~Uart() = default;
+    void enable8BitUart();
     static Uart* instance;
 };
 
