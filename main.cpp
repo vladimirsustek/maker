@@ -27,8 +27,16 @@ int main(void)
     uint8_t buffer[64];
     uint16_t length;
 
-    /* Enable all interrupts within Atmega328p*/
+    /* Timer used for ms_delay, tone and PWM */
+    Tim *tim = Tim::getInstance();
+    Tone* tone = Tone::getInstance(tim);
+    
     Core::enableInterrupts();
+    tim->enableFastPWM_OC2B(TIMER1_CAPT_vect_num);
+    tim->setPWM_OC2B(127);
+    while(1);
+
+    /* Enable all interrupts within Atmega328p*/
 
     /* Initialize 57600baud Uart */
     Uart* uart = Uart::getInstance();
@@ -45,10 +53,6 @@ int main(void)
     "   -I2C\n"
     "   -WDG\n"
     "   -FLASH\n");
-
-    /* Timer used for ms_delay, tone and PWM */
-    Tim *tim = Tim::getInstance();
-    Tone* tone = Tone::getInstance(tim);
 
     /* Led GPIO */
     Gpio gpioPB5 = Gpio(GPIO::GpioPort::IO_PORTB, GPIO::GpioPin::Pin5, GPIO::GpioDirection::Output);

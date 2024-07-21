@@ -5,6 +5,7 @@
 #endif
 
 EXTERNC void uart_write(char c);
+EXTERNC int uart_writechar(char c);
 
 #undef EXTERNC
 // ...
