@@ -28,13 +28,15 @@ EEPROM_FILE_PATH_AND_NAME = EEPROM.eep
 
 OUTPUT_DIR :=Debug
 EXECUTABLE_NAME = Maker
-MAP_FILE= $(EXECUTABLE_NAME).map
+MAP_FILE= $(OUTPUT_DIR)/$(EXECUTABLE_NAME).map
 
 INCLUDES := \
 		Inc/ \
 		$(AVR_GCC_DIR)/avr/include
 
-SOURCES = 	$(wildcard Src/*.cpp)
+SOURCES = \
+		$(wildcard Src/*.cpp) \
+		main.cpp
 			
 C_SOURCES = $(SOURCES)
 
