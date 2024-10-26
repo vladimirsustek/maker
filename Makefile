@@ -1,38 +1,23 @@
-ifdef OS
-AVR_GCC_DIR = C:\avr-gcc
-else
-AVR_GCC_DIR = /home/vladimir/avr-gcc
-endif
 
-#OS equal to 'Windows_NT' for Windows machines
-ifdef OS
-CXX = $(AVR_GCC_DIR)\bin\avr-g++.exe
-CXXLD = $(AVR_GCC_DIR)\bin\avr-g++.exe
-OBJ_COPY =$(AVR_GCC_DIR)\bin\avr-objcopy.exe
-OBJ_DUMP =$(AVR_GCC_DIR)\bin\avr-objdump.exe
-INC_DIRS = -I$(AVR_GCC_DIR)\avr\include
-LIB_DIRS=-L$(AVR_GCC_DIR)\avr
-AVRDUDESS =C:\AVRDUDESS\avrdude.exe
-TEXT2INTELHEX = tools\Text2IntelHex.exe
-else
-CXX = $(AVR_GCC_DIR)/bin/avr-g++
-CXXLD = $(AVR_GCC_DIR)/bin/avr-g++
-OBJ_COPY =$(AVR_GCC_DIR)/bin/avr-objcopy
-OBJ_DUMP =$(AVR_GCC_DIR)/bin/avr-objdump
+AVR_GCC_DIR = C:/avr-gcc
+
+CXX = $(AVR_GCC_DIR)/bin/avr-g++.exe
+CXXLD = $(AVR_GCC_DIR)/bin/avr-g++.exe
+OBJ_COPY =$(AVR_GCC_DIR)/bin/avr-objcopy.exe
+OBJ_DUMP =$(AVR_GCC_DIR)/bin/avr-objdump.exe
 INC_DIRS = -I$(AVR_GCC_DIR)/avr/include
 LIB_DIRS=-L$(AVR_GCC_DIR)/avr
-TEXT2INTELHEX = ./tools/Text2IntelHex
-AVRDUDESS =
-endif
-
-#USB Port
-USB_PORT =COM11
-PORT_SPEED =57600
-FLASH_MCU =m328p
-PROGRAMMER =arduino
+AVRDUDESS =C:/AVRDUDESS/avrdude.exe
+TEXT2INTELHEX = tools/Text2IntelHex.exe
 
 OBJ_COPY_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature -O ihex
 OBJ_DUMP_FLAG = -h -S
+
+#USB Port
+USB_PORT =COM4
+PORT_SPEED =57600
+FLASH_MCU =m328p
+PROGRAMMER =arduino
 
 MCU_NAME =atmega328p
 MCU_CLOCK =16000000
@@ -41,67 +26,95 @@ OPTIMIZATIONS =-O0
 TEXT2INTELHEX_START_ADR =0000
 EEPROM_FILE_PATH_AND_NAME = EEPROM.eep
 
+OUTPUT_DIR :=Debug
+EXECUTABLE_NAME = Maker
+MAP_FILE= $(EXECUTABLE_NAME).map
+
+INCLUDES := \
+		Inc/ \
+		$(AVR_GCC_DIR)/avr/include
+
+SOURCES = 	$(wildcard Src/*.cpp)
+			
+C_SOURCES = $(SOURCES)
+
+SOURCE_DIRECTORIES = $(foreach item, $(SOURCES), $(dir $(item)))
+SOURCE_DIRECTORIES_UNIQ = $(eval _uniq, := $(SOURCE_DIRECTORIES))$(strip $(foreach _,$(_uniq), $(if $(filter $_, $(_uniq)),$(eval _uniq := $(filter-out $_,$(_uniq)))$)))
+ 
 #-c stands for "only compiler, no linking"
-CFLAGS=-c -Wall -mmcu=$(MCU_NAME) $(OPTIMIZATIONS) -DF_CPU=$(MCU_CLOCK) -g
-CFLAGS += -std=gnu++11
-CFLAGS += -fno-threadsafe-statics
+CCFLAGS = \
+		-c \
+		-Wall \
+		-mmcu=$(MCU_NAME) \
+		$(OPTIMIZATIONS) \
+		-DF_CPU=$(MCU_CLOCK) \
+		-g \
+		-std=gnu++11 \
+		-fno-threadsafe-statics
 
-LD_FLAGS_1 =-mmcu=$(MCU_NAME) -Wl,-Map=
+LD_FLAGS_1 = \
+		-mmcu=$(MCU_NAME) \
+		-Wl,-Map=
+		
 LD_FLAGS_2 = ,--cref
+	 
+CCINCLUDES := $(addprefix -I, $(INCLUDES))
 
-OBJDIR =obj
-BINDIR =bin
+# Designed to go through sources with complete path:
+# e.g. ../../../../dir/module.c
+# Removes all the '../' and returns just the file basename
+# consenquently appended with '.o' suffix.
+# The '../' removal ensures that once the list of objects
+# created out of this rule is used during GCC compiling to create an actual object file, 
+# object file will be not located in other than $(OUTPUT_DIR)/ folder.
+# In case of not '../' removal, object file appears exactly in the ../../../../dir/.
+conv_src_to_obj = $(subst ../,, $(addsuffix .o,$(OUTPUT_DIR)/$(basename $(1))))
 
-# := means the assigment is executed only once (not again)
-# ?= means that assigment is executed when not yet assigned, so
-MCU_NAME ?=this_will_not_cause_error
-# MCU_NAME =this_will_cause_error
+# Firstly gets object full path and name e.g.:
+# ../../../../dir/module.c -> $(OUTPUT_DIR)/dir/module.o
+# than invokes method with dependency file ../../../../dir/module.c
+# and folder $(OUTPUT_DIR)/dir/. The method body calls GCC compile with
+# the original .c file path ../../../../dir/module.c but .o will be in the $(OUTPUT_DIR)/dir
+define C_BUILD_RULE
+OBJS += $(call conv_src_to_obj, $(1))
+$(call conv_src_to_obj, $(1)) : $(1) | $(dir $(call conv_src_to_obj, $(1)))
+	@ $(CXX) $(CCFLAGS) $(CCINCLUDES) $$< -o $$@
+	@echo building: $(1)
+endef
 
-SOURCES := $(wildcard *.cpp)
-OBJECTS := $(patsubst %.cpp,$(OBJDIR)/%.o,$(SOURCES))
+define SUBDIR_RULE
+$(1):
+	@ MKDIR -p $$@
+endef
 
-INC_DIRS += -I$(CURDIR)
+define PRINT_OBJ
+@echo $(1)
+endef
 
-TARGET_NAME=Maker
-EXECUTABLE=bin/$(TARGET_NAME).elf
-MAP_FILE=bin/$(TARGET_NAME).map
+$(foreach src,$(C_SOURCES),$(eval $(call C_BUILD_RULE, $(src))))
+$(foreach outdir, $(sort $(dir $(OBJS))), $(eval $(call SUBDIR_RULE, $(dir $(outdir)))))
 
-.PHONY: all
-all: $(SOURCES) $(EXECUTABLE)
+$(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf: $(OBJS)
+	$(foreach object, $(OBJS), $(info linking: $(object)))
+	@ $(CXXLD) $(LIB_DIRS) -o $@ $(OBJS) $(LD_FLAGS_1)$(MAP_FILE)$(LD_FLAGS_2)
+	@echo linked  as: $(EXECUTABLE_NAME).elf
+	
+.PHONY: build
+build: $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf
+	$(OBJ_DUMP) $(OBJ_DUMP_FLAG) $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf > $(OUTPUT_DIR)/$(EXECUTABLE_NAME).lss
+	$(OBJ_COPY) $(OBJ_COPY_FLAGS) $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf $(OUTPUT_DIR)/$(EXECUTABLE_NAME).hex
 
-# '| build_directory' means that build_directory is called before 
-# "EXECUTABLES" is created (MUST BE).
-$(EXECUTABLE): $(OBJECTS) | build_directory
-	$(CXXLD) $(LIB_DIRS) -o $@ $(OBJECTS) $(LD_FLAGS_1)$(MAP_FILE)$(LD_FLAGS_2)
-	$(OBJ_DUMP) $(OBJ_DUMP_FLAG) $(EXECUTABLE) > $(BINDIR)/$(TARGET_NAME).lss
-	$(OBJ_COPY) $(OBJ_COPY_FLAGS) $(EXECUTABLE) $(BINDIR)/$(TARGET_NAME).hex
-
-
-# A pattern, how to create .o file(s) in the OBJDIR.
-# The '%' is a wildcard -> so it says for anny .cpp make an .o
-# The '| object_directory' says, that the method is called before building.
-$(OBJECTS): $(OBJDIR)/%.o: %.cpp | object_directory
-# $< automatic variable representing prerequisite (source file) => %.cpp.
-# $@ automatic variable representing object file => %.o
-	$(CXX) $(CFLAGS) $(INC_DIRS) $< -o $@
-
-object_directory:
-ifdef OS
-	IF exist $(OBJDIR) (echo "$(OBJDIR) exists") ELSE (mkdir $(OBJDIR))
-else
-	if [ ! -d "$(OBJDIR)/" ]; then mkdir $(OBJDIR)/; else echo "$(OBJDIR)/" exists; fi
-endif
-
-build_directory:
-ifdef OS
-	IF exist $(BINDIR) (echo "$(BINDIR) exists") ELSE (mkdir $(BINDIR))
-else
-	if [ ! -d "$(BINDIR)/" ]; then mkdir $(BINDIR)/; else echo "$(BINDIR)/" exists; fi
-endif
-
+.PHONY: clean
+clean:
+	rm -r $(OUTPUT_DIR)
+	
+.PHONY: rebuild
+rebuild: build
+	@ touch $(SOURCES)
+	
 .PHONY: flash
-flash: $(BINDIR)/$(TARGET_NAME).hex
-	$(AVRDUDESS) -u -c $(PROGRAMMER) -p $(FLASH_MCU) -P $(USB_PORT) -b $(PORT_SPEED) -V -U flash:w:"$(BINDIR)/$(TARGET_NAME).hex":a 
+flash: $(OUTPUT_DIR)/$(EXECUTABLE_NAME).hex
+	$(AVRDUDESS) -u -c $(PROGRAMMER) -p $(FLASH_MCU) -P $(USB_PORT) -b $(PORT_SPEED) -V -U flash:w:"$(OUTPUT_DIR)/$(EXECUTABLE_NAME).hex":a 
 
 .PHONY: eeprom_convert
 eeprom_convert: eeprom.txt
@@ -111,19 +124,6 @@ eeprom_convert: eeprom.txt
 eeprom: $(EEPROM_FILE_PATH)
 	$(AVRDUDESS) -u -c $(PROGRAMMER) -p $(FLASH_MCU) -P $(USB_PORT) -b $(PORT_SPEED) -V -U eeprom:w:"$(EEPROM_FILE_PATH_AND_NAME)":a
 
-.PHONY: clean
-clean:
-ifdef OS
-	@echo off
-	IF exist $(OBJDIR) (rmdir /s /q $(OBJDIR)) ELSE (echo "$(OBJDIR) does not exist")
-	IF exist $(BINDIR) (rmdir /s /q $(BINDIR)) ELSE (echo "$(BINDIR) does not exist")
-	@echo on
-else
-	@if [ -d "$(OBJDIR)/" ]; then rm -r $(OBJDIR)/; else echo "$(OBJDIR)/ does not exists"; fi
-	@if [ -d "$(BINDIR)/" ]; then rm -r $(BINDIR)/; else echo "$(BINDIR)/ does not exists"; fi
-endif
-
-rebuild: clean | all
-
 print-%  : ; @echo $* = $($*)
 
+	
