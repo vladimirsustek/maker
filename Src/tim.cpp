@@ -141,7 +141,9 @@ void Tim::enableFastPWM_OC2B(bool en)
         /* Enabling fast PWM */
         TCCR2A |= (1 << WGM21)|(1 << WGM20);
         /* Prescaler 1024 (16M/1024 = 250kHz)*/
-        TCCR2B |= (1 << CS22)| (1 << CS21)|(1 << CS20);
+        //TCCR2B |= (1 << CS22)| (1 << CS21)|(1 << CS20);
+        TCCR2B |= (1 << CS20);
+
     }
     else
     {
