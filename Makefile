@@ -1,14 +1,13 @@
 
 AVR_GCC_DIR = C:/avr-gcc
+LIB_DIRS=-L$(AVR_GCC_DIR)/avr
 
 CXX = $(AVR_GCC_DIR)/bin/avr-g++.exe
 CXXLD = $(AVR_GCC_DIR)/bin/avr-g++.exe
 OBJ_COPY =$(AVR_GCC_DIR)/bin/avr-objcopy.exe
 OBJ_DUMP =$(AVR_GCC_DIR)/bin/avr-objdump.exe
-INC_DIRS = -I$(AVR_GCC_DIR)/avr/include
-LIB_DIRS=-L$(AVR_GCC_DIR)/avr
 AVRDUDESS =C:/AVRDUDESS/avrdude.exe
-TEXT2INTELHEX = tools/Text2IntelHex.exe
+TEXT2INTELHEX = tools/Text2IntelHex/Text2IntelHex.exe
 
 OBJ_COPY_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature -O ihex
 OBJ_DUMP_FLAG = -h -S
@@ -32,13 +31,13 @@ MAP_FILE= $(OUTPUT_DIR)/$(EXECUTABLE_NAME).map
 
 INCLUDES := \
 		$(AVR_GCC_DIR)/avr/include \
-		Inc/ \
+		Drivers/atmega328p/Inc/ \
 		Application/cmd_dispatcher/stack \
 		Application/cmd_dispatcher/this_app/ \
 		Application/cmd_dispatcher/this_app/Inc/
 
 SOURCES = \
-		$(wildcard Src/*.cpp) \
+		$(wildcard Drivers/atmega328p/Src/*.cpp) \
 		$(wildcard Application/cmd_dispatcher/stack/*.cpp) \
 		$(wildcard Application/cmd_dispatcher/this_app/*.cpp) \
 		$(wildcard Application/cmd_dispatcher/this_app/src/*.cpp) \
