@@ -11,7 +11,7 @@ extern "C"
     #include <stdio.h>
 }
 
-uint16_t PrintData(const uint8_t* const pStrCmd, const uint8_t lng)
+uint32_t PrintData(const uint8_t* const pStrCmd, const uint8_t lng)
 {
     if ((CMD_METHOD_LNG + CMD_NAME_LNG +
         CMD_DELIMITER_LNG*3 + CMD_ARG5_LNG*2+
@@ -68,7 +68,7 @@ uint16_t PrintData(const uint8_t* const pStrCmd, const uint8_t lng)
 
 }
 
-uint16_t WriteData(const uint8_t* const pStrCmd, const uint8_t lng)
+uint32_t WriteData(const uint8_t* const pStrCmd, const uint8_t lng)
 {
     if (((CMD_METHOD_LNG + CMD_NAME_LNG +
         CMD_DELIMITER_LNG*4 + CMD_ARG5_LNG*2+

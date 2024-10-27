@@ -14,7 +14,7 @@ OBJ_COPY_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature -O ihex
 OBJ_DUMP_FLAG = -h -S
 
 #USB Port
-USB_PORT =COM4
+USB_PORT =COM7
 PORT_SPEED =57600
 FLASH_MCU =m328p
 PROGRAMMER =arduino
@@ -31,11 +31,17 @@ EXECUTABLE_NAME = Maker
 MAP_FILE= $(OUTPUT_DIR)/$(EXECUTABLE_NAME).map
 
 INCLUDES := \
+		$(AVR_GCC_DIR)/avr/include \
 		Inc/ \
-		$(AVR_GCC_DIR)/avr/include
+		Application/cmd_dispatcher/stack \
+		Application/cmd_dispatcher/this_app/ \
+		Application/cmd_dispatcher/this_app/Inc/
 
 SOURCES = \
 		$(wildcard Src/*.cpp) \
+		$(wildcard Application/cmd_dispatcher/stack/*.cpp) \
+		$(wildcard Application/cmd_dispatcher/this_app/*.cpp) \
+		$(wildcard Application/cmd_dispatcher/this_app/src/*.cpp) \
 		main.cpp
 			
 C_SOURCES = $(SOURCES)

@@ -3,6 +3,6 @@
 
 #include "cmd_defs.hpp"
 
-uint16_t SpiWriteRead(const uint8_t* const pStrCmd, const uint8_t lng);
+uint32_t SpiWriteRead(const uint8_t* const pStrCmd, const uint8_t lng);
 
 #endif

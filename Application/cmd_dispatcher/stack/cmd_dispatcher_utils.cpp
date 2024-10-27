@@ -12,7 +12,7 @@ void hex2AsciiHex_andPrint(const uint8_t *pArr, uint8_t arrLng, pfn_u8_cu8 fn)
     }
     for(uint16_t k = 0; k < arrLng; k++)
     {
-        const uint8_t space = static_cast<uint8_t>(' ');
+        //const uint8_t space = static_cast<uint8_t>(' ');
         uint8_t upperNible = (pArr[k] & 0xF0) >> 4;
         uint8_t lowerNible = (pArr[k] & 0x0F);
 

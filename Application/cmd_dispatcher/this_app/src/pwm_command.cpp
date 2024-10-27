@@ -2,7 +2,7 @@
 
 #include "tim.hpp"
 
-uint16_t EnablePWM_OC2B(const uint8_t* const pStrCmd, const uint8_t lng)
+uint32_t EnablePWM_OC2B(const uint8_t* const pStrCmd, const uint8_t lng)
 {
     if ((CMD_METHOD_LNG + CMD_NAME_LNG +
          CMD_DELIMITER_LNG*2 + CMD_ARG5_LNG+
@@ -26,7 +26,7 @@ uint16_t EnablePWM_OC2B(const uint8_t* const pStrCmd, const uint8_t lng)
 
 
 
-uint16_t SetPWM_OC2B(const uint8_t* const pStrCmd, const uint8_t lng)
+uint32_t SetPWM_OC2B(const uint8_t* const pStrCmd, const uint8_t lng)
 {
     if ((CMD_METHOD_LNG + CMD_NAME_LNG +
          CMD_DELIMITER_LNG*2 + CMD_ARG5_LNG+

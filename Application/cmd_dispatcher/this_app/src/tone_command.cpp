@@ -43,7 +43,7 @@ const Song Sedmikrasky[SEDMIKRASKY_LNG]
     {Note::CisDb_7, Duration::Quarter}
 };
 
-uint16_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng)
+uint32_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng)
 {
     if ((CMD_METHOD_LNG + CMD_NAME_LNG +
          CMD_DELIMITER_LNG*3 + CMD_ARG5_LNG*2+
@@ -74,7 +74,7 @@ uint16_t TonePlay(const uint8_t* const pStrCmd, const uint8_t lng)
     return 0;
 }
 
-uint16_t PlaySedmikrasky(const uint8_t* const pStrCmd, const uint8_t lng)
+uint32_t PlaySedmikrasky(const uint8_t* const pStrCmd, const uint8_t lng)
 {
     if ((CMD_METHOD_LNG + CMD_NAME_LNG +
         CMD_DELIMITER_LNG*1 +

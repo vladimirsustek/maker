@@ -2,14 +2,16 @@
 #define CMD_DISPATCHER_HPP
 
 #include "cmd_defs.hpp"
-#include "tone.hpp"
+
+constexpr uint32_t SHARED_BUFF_SIZE = 128u;
 
 class CommandDispatcher
 {
 public: 
-    CommandDispatcher() = default;
+    CommandDispatcher();
     ~CommandDispatcher() = default;
-    uint16_t Dispatch(const uint8_t* const pStrCmd, const uint8_t lng);
+    uint32_t Dispatch(const uint8_t* const pStrCmd, const uint8_t lng);
+    void HelpCommandPrintOut();
 };
 
 #endif // CMD_DISPATCHER_H_INCLUDED

@@ -8,11 +8,12 @@ extern "C"
 #include "uartc_wrapper.h"
 }
 
-uint16_t SpiWriteRead(const uint8_t* const pStrCmd, const uint8_t lng)
+uint32_t SpiWriteRead(const uint8_t* const pStrCmd, const uint8_t lng)
 {
 
     Spi* spi = Spi::getInstance();
     Uart* uart = Uart::getInstance();
+    (void)uart;
 
     uint8_t spiTransactionLng = ((pStrCmd[CMD_ARG_OFFSET] - '0') *10) + (pStrCmd[CMD_ARG_OFFSET+1] - '0');
 
