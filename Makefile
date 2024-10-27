@@ -117,7 +117,10 @@ clean:
 	rm -r $(OUTPUT_DIR)
 	
 .PHONY: rebuild
-rebuild: build
+rebuild: force_build | build
+
+.PHONY: force_build
+force_build: 
 	@ touch $(SOURCES)
 	
 .PHONY: flash
