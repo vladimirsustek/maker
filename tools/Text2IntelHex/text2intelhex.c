@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define PROGRAM_VERSION "Text2IntelHex_0_0_1"
 #define TEST 0
@@ -66,8 +67,8 @@ void checksum_test()
 {
 #ifdef TEST
 #define SAMPLE_DATA_SIZE 20u
-    const uint8_t sample_data_1_checksum = 0x49;
-    const uint8_t sample_data_1[SAMPLE_DATA_SIZE] =
+    uint8_t sample_data_1_checksum = 0x49;
+    uint8_t sample_data_1[SAMPLE_DATA_SIZE] =
     {
         0x10, 0x00, 0x00, 0x00, 0x0C, 0x94, 0x34, 0x00, 0x0C, 0x94,
         0x51, 0x00, 0x0C, 0x94, 0x51, 0x00, 0x0C, 0x94, 0x51, 0x00
@@ -190,7 +191,7 @@ int main(int argc, char** argv)
     int length = 0;
     uint16_t address;
 
-    printf("%s\n", PROGRAM_VERSION);
+    printf(";%s\n", PROGRAM_VERSION);
 
     if (argc != 3)
     {
