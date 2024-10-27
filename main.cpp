@@ -30,17 +30,13 @@ int main(void)
     /* Timer used for ms_delay, tone and PWM */
     Tim *tim = Tim::getInstance();
     Tone* tone = Tone::getInstance(tim);
-    
-    Core::enableInterrupts();
-    tim->enableFastPWM_OC2B(TIMER1_CAPT_vect_num);
-    tim->setPWM_OC2B(127);
-    while(1);
-
-    /* Enable all interrupts within Atmega328p*/
 
     /* Initialize 57600baud Uart */
     Uart* uart = Uart::getInstance();
     uart->enableRxISR(true);
+
+    /* Enable all interrupts within Atmega328p*/
+    Core::enableInterrupts();
 
     /* All Simple-MCU-might-use C++ casts showed */
     uart->write(reinterpret_cast<uint8_t*>(const_cast<char*>("HelloWorld!\n")), static_cast<uint16_t>(strlen("HelloWorld!\n")));
