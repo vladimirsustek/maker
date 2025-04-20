@@ -6,6 +6,7 @@ CXX = $(AVR_GCC_DIR)/bin/avr-g++.exe
 CXXLD = $(AVR_GCC_DIR)/bin/avr-g++.exe
 OBJ_COPY =$(AVR_GCC_DIR)/bin/avr-objcopy.exe
 OBJ_DUMP =$(AVR_GCC_DIR)/bin/avr-objdump.exe
+SIZE =$(AVR_GCC_DIR)/bin/avr-size.exe
 AVRDUDESS =C:/AVRDUDESS/avrdude.exe
 TEXT2INTELHEX = tools/Text2IntelHex/Text2IntelHex.exe
 
@@ -13,7 +14,7 @@ OBJ_COPY_FLAGS = -R .eeprom -R .fuse -R .lock -R .signature -O ihex
 OBJ_DUMP_FLAG = -h -S
 
 #USB Port
-USB_PORT =COM7
+USB_PORT =COM9
 PORT_SPEED =57600
 FLASH_MCU =m328p
 PROGRAMMER =arduino
@@ -110,6 +111,7 @@ $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf: $(OBJS)
 build: $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf
 	$(OBJ_DUMP) $(OBJ_DUMP_FLAG) $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf > $(OUTPUT_DIR)/$(EXECUTABLE_NAME).lss
 	$(OBJ_COPY) $(OBJ_COPY_FLAGS) $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf $(OUTPUT_DIR)/$(EXECUTABLE_NAME).hex
+	$(SIZE) $(OUTPUT_DIR)/$(EXECUTABLE_NAME).elf
 
 .PHONY: clean
 clean:

@@ -94,3 +94,10 @@ uint32_t PlaySedmikrasky(const uint8_t* const pStrCmd, const uint8_t lng)
     }    
     return 0;
 }
+
+void FnPlaySedmiKrasky()
+{
+    const uint8_t desiredString[] = "PL_SDMK\n";
+    uint32_t strLng = strlen(reinterpret_cast<const char*>(desiredString));
+    PlaySedmikrasky(const_cast<uint8_t*>(desiredString), strLng);
+}

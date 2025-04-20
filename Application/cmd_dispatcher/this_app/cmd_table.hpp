@@ -19,10 +19,10 @@ constexpr uint32_t CMD_TABLE_SIZE = 7u;
 const CmdDisp_t cmdTable[CMD_TABLE_SIZE] = {
 /*01*/    {method_play,             cmd_tone,               TonePlay},
 /*02*/    {method_play,             cmd_sedmikrasky,        PlaySedmikrasky},
-/*03*/    {method_read,             cmd_data,               PrintData},
-/*04*/    {method_write,            cmd_data,               WriteData},
-/*05*/    {method_enable,           cmd_pwm,                EnablePWM_OC2B},
-/*06*/    {method_write,            cmd_pwm,                SetPWM_OC2B},
+/*03*/    {method_enable,           cmd_pwm,                EnablePWM_OC2B},
+/*04*/    {method_write,            cmd_pwm,                SetPWM_OC2B},
+/*05*/    {method_read,             cmd_data,               PrintData},
+/*06*/    {method_write,            cmd_data,               WriteData},
 /*07*/    {method_write,            cmd_spi,                NULL}
 };
 

@@ -57,15 +57,15 @@ typedef struct DispatcherCommand
 class METHOD
 {
 public:
-    METHOD(const char* p) {strcpy(const_cast<char*>(word), const_cast<char*>(p));}
-    char word[3];
+    METHOD(const char* p) {memcpy(const_cast<char*>(word), const_cast<char*>(p), strlen(p)); memset(word+strlen(p), '\0', 4-strlen(p));}
+    char word[4];
 };
 
 class COMMAND
 {
 public:
-    COMMAND(const char* p) {strcpy(const_cast<char*>(word), const_cast<char*>(p));}
-    char word[4];
+    COMMAND(const char* p) {memcpy(const_cast<char*>(word), const_cast<char*>(p), strlen(p)); memset(word+strlen(p), '\0', 10-strlen(p));}    
+	char word[10];
 };
 
 
