@@ -43,8 +43,6 @@ SOURCES = \
 		$(wildcard Application/cmd_dispatcher/this_app/*.cpp) \
 		$(wildcard Application/cmd_dispatcher/this_app/src/*.cpp) \
 		main.cpp
-
-SOURCES = main.c
 			
 C_SOURCES = $(SOURCES)
 

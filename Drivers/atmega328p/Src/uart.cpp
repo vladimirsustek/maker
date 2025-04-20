@@ -219,7 +219,7 @@ void Uart::enable8BitUart()
     UCSR0B |= (1 << RXEN0);
 
     /* Initialize ring buffer */
-    memset(const_cast<uint8_t*>(rx_buff), 0, 128);
+    memset(const_cast<uint8_t*>(rx_buff), 0, UART_RX_BUFF_SIZE);
 
     rx_buff_wr_idx = 0u;
     rx_buff_rd_idx = 0u;
