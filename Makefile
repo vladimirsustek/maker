@@ -21,7 +21,7 @@ PROGRAMMER =arduino
 
 MCU_NAME =atmega328p
 MCU_CLOCK =16000000
-OPTIMIZATIONS =-O0
+OPTIMIZATIONS =-O2
 
 TEXT2INTELHEX_START_ADR =0000
 EEPROM_FILE_PATH_AND_NAME = EEPROM.eep
@@ -43,6 +43,8 @@ SOURCES = \
 		$(wildcard Application/cmd_dispatcher/this_app/*.cpp) \
 		$(wildcard Application/cmd_dispatcher/this_app/src/*.cpp) \
 		main.cpp
+
+SOURCES = main.c
 			
 C_SOURCES = $(SOURCES)
 

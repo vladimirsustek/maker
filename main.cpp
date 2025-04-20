@@ -16,11 +16,21 @@ extern "C"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+
 }
 
 template <typename T> T myMax(T x, T y)
 {
     return (x > y) ? x : y;
+}
+
+volatile uint16_t ch6Volt = 0;
+
+ISR(ADC_vect) 
+{
+    volatile uint8_t adcl = ADCL;
+    volatile uint8_t adch = ADCH;
+    ch6Volt = (0x300 & static_cast<uint16_t>(adch) << 8) | static_cast<uint16_t>(adcl);
 }
 
 int main(void)
@@ -35,6 +45,19 @@ int main(void)
     /* Initialize 57600baud Uart */
     Uart* uart = Uart::getInstance();
     uart->enableRxISR(true);
+
+    PRR &= ~(1 << PRADC);
+    
+    ADCSRA |= (1 << ADEN);
+    ADMUX  |= ~((1 << MUX3) | (1 << MUX2) | (1 << MUX1) | (1 << MUX0));
+    ADCSRA |= (1 << ADATE) | (1 << ADIE);
+    ADMUX  |= ((1<<REFS1) | (1<<REFS0)); 
+    ADCSRB &=~( (1 << ADTS2) | (1 << ADTS1) | (1 << ADTS0) ); 
+    ADCSRA |= (1<<ADPS2) | (1<<ADPS1) | (1<<ADPS0);
+    ADCSRA &=~(1<<ADPS2);
+    DIDR0  = 0b00111111;
+    ADCSRA |=(1 << ADSC);
+
 
     /* Enable all interrupts within Atmega328p*/
     Core::enableInterrupts();
@@ -67,7 +90,7 @@ int main(void)
         {
             buffer[length] = 0u;
             uart->write(buffer, length);
-            dispatcher.Dispatch(buffer, length);
+            //dispatcher.Dispatch(buffer, length);
 
         }
 
@@ -78,6 +101,7 @@ int main(void)
             if(!cnt)
             {
                 gpioPB5.set(true);
+                printf("ADC: %u\n", ch6Volt);
             }
             else
             {
